@@ -1,0 +1,15 @@
+燕文 YANWEN 验证日志
+时间: 2026-10-21T06:24:49.166Z
+窗口: carrier=YANWEN / process_date >= 2026-07-21
+
+JSON: YANWEN_track_created_since2026-07-21_20261021_142425.json (21 条)
+DB: 2008 条
+
+1. dest_tracking 匹配率: 100.0%
+2. shipment_status 匹配率: 100.0%
+3. 完整性: 缺失 0 条
+4. tracking_no 唯一性: 0 个重复
+5. 状态值有效性: 0 个无效
+
+结果: 通过
+耗时: 2.2 秒

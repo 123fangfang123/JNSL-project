@@ -1,0 +1,15 @@
+燕文 YANWEN 验证日志
+时间: 2026-10-20T05:01:10.981Z
+窗口: created / process_date >= 2026-07-20
+
+JSON: YANWEN_track_created_since2026-07-20_20261020_130107.json (0 条)
+DB: 0 条
+
+1. dest_tracking 匹配率: N/A%
+2. shipment_status 匹配率: N/A%
+3. 完整性: 缺失 0 条
+4. tracking_no 唯一性: 0 个重复
+5. 状态值有效性: 0 个无效
+
+结果: 通过
+耗时: 1.0 秒

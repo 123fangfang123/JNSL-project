@@ -1,0 +1,3 @@
+tracking_no,transaction_id,process_date,channel_id,db_shipment_status,api_status,api_status_desc,query_ok,error_msg
+"UL559538116YP","7953827725653","2026-09-30","燕文专属专线追踪普货-TI","created","SC38","异常","Y",""
+"UL560233765YP","18921989964092","2026-10-01","燕文专属专线追踪普货-TI","created","OR10","已制单","Y",""

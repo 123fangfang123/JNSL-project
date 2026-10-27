@@ -1,0 +1,2 @@
+tracking_no,transaction_id,process_date,channel_id,db_shipment_status,api_status,api_status_desc,query_ok,error_msg
+"YT2627900711950816","7974582354261","2026-10-06","云途全球专线挂号（特惠普货）","created","E","可能异常","Y",""

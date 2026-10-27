@@ -1,0 +1,35 @@
+[2026-10-23 06:22:49] === YUNExpress freight import (Insert-Only, v2.5 0/null fix) ===
+[2026-10-23 06:22:49] 
+[2026-10-23 06:22:49] Step 1: Read Excel...
+[2026-10-23 06:22:49]    Sheet: 运输服务扣费汇总, Headers: 25, Rows: 261
+[2026-10-23 06:22:49] 
+[2026-10-23 06:22:49] Step 2: Identify carrier...
+[2026-10-23 06:22:49]    Carrier: YUNExpress
+[2026-10-23 06:22:49]    Matched: 发生时间 -> YUNExpress, 交易金额 -> YUNExpress
+[2026-10-23 06:22:49]    Weight unit: kg
+[2026-10-23 06:22:49]    Other fee: freight - freight_fee - registered_fee
+[2026-10-23 06:22:49] 
+[2026-10-23 06:22:49] Step 3: Parse data (v2.5: preserve 0, null for unmapped)...
+[2026-10-23 06:22:49]    Valid: 261, Skipped rows: 0
+[2026-10-23 06:22:49]    Zero values found: 17
+[2026-10-23 06:22:49]    Sample: {"tracking_no":"YT2621500710143136","billing_date":"2026-09-01","weight_g":1.777,"freight":2,"freight_fee":0,"registered_fee":0,"other_fee":2}
+[2026-10-23 06:22:49]    Sample2: {"tracking_no":"YT2623600710324815","billing_date":"2026-09-01","weight_g":1.6,"freight":214.21,"freight_fee":120,"registered_fee":40,"other_fee":54.21}
+[2026-10-23 06:22:49]    Records with 0 values: 6
+[2026-10-23 06:22:49]    Example (0-value): {"tracking_no":"YT2621500710143136","billing_date":"2026-09-01","weight_g":1.777,"freight":2,"freight_fee":0,"registered_fee":0,"other_fee":2}
+[2026-10-23 06:22:49] 
+[2026-10-23 06:22:49] Step 4: Insert to freight (skip existing)...
+[2026-10-23 06:22:52]    Already existing: 255/261
+[2026-10-23 06:22:52]    SKIP (exists): 255 records (summary)
+[2026-10-23 06:22:52]    To insert: 6
+[2026-10-23 06:22:52]    Result: inserted=6, skipped=255, errors=0
+[2026-10-23 06:22:52] 
+[2026-10-23 06:22:52] ========== Report ==========
+[2026-10-23 06:22:52] File: 云途02e2a6d574cc47bdb971d4dff66ff563.xlsx
+[2026-10-23 06:22:52] Carrier: YUNExpress
+[2026-10-23 06:22:52] Total rows: 261
+[2026-10-23 06:22:52] Valid records: 261
+[2026-10-23 06:22:52] Zero values: 17
+[2026-10-23 06:22:52] Inserted: 6
+[2026-10-23 06:22:52] Skipped (exists): 255
+[2026-10-23 06:22:52] Errors: 0
+[2026-10-23 06:22:52] ============================

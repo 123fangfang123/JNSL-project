@@ -1,0 +1,40 @@
+tracking_no,transaction_id,order_date,store_name,country,status,latest_date,latest_comment,dest_tracking,provider_code,track_count
+HHWUE6207000501YQ,7489113391297,2026-07-26,Masahira,US,CC,2026-09-03 07:47:00,"Delivered; Parcel Locker -&gt; Your item was delivered to a parcel locker at 7:47 am on September 3; 2026 in CRAIG; AK 99921.",,,24
+HHWPZ6207013301YQ,7489367441601,2026-07-26,Masahira,US,IR,2026-07-26 12:24:09,"运单电子信息已收到",,,1
+HHWUE6217012401YQ,JQD1528,2026-07-10,Masahira,US,CC,2026-08-31 16:55:00,"Delivered; In/At Mailbox -&gt; Your item was delivered in or at the mailbox at 4:55 pm on August 31; 2026 in HONOLULU; HI 96825.",,,32
+HHWYM6229025301YQ,8154271187287,2026-08-15,Shirosuki,US,IR,2026-08-17 16:21:07,"运单电子信息已收到",,,1
+HHWPZ6231102001YQ,7456604127425_1,2026-07-16,Masahira,US,IR,2026-08-19 16:50:03,"运单电子信息已收到",,,1
+HHWUE6233009102YQ,13695981191545,2026-08-20,Harutani,US,CC,2026-09-17 09:12:00,"Delivered; Left with Individual -&gt; Your item was delivered to an individual at the address at 9:12 am on September 17; 2026 in HOMER; AK 99603.",,,45
+HHWUE6234004801YQ,8177483874647,2026-08-21,Shirosuki,US,CC,2026-09-04 10:08:00,"Delivered; In/At Mailbox -&gt; Your item was delivered in or at the mailbox at 10:08 am on September 4; 2026 in HALEIWA; HI 96712.",,,20
+HHWUE6234004901YQ,13699021111673,2026-08-21,Harutani,US,CC,2026-09-05 10:39:00,"Delivered; Individual Picked Up at Post Office -&gt; Your item was picked up at the post office at 10:39 am on September 5; 2026 in GIRDWOOD; AK 99587.",,,20
+HHWUE6236019901YQ,8182784131415,2026-08-23,Shirosuki,US,FK,2026-09-04 06:29:05,"In Transit to Next Facility",,,12
+HHWUE6238002201YQ,13711637250425,2026-08-25,Harutani,US,FK,2026-09-16 08:16:33,"In Transit to Next Facility",,,11
+HHWUE6238020301YQ,13715655098745,2026-08-26,Harutani,US,CC,2026-09-10 09:49:00,"Delivered; In/At Mailbox -&gt; Your item was delivered in or at the mailbox at 9:49 am on September 10; 2026 in HALEIWA; HI 96712.",,,29
+HHWUE6239005401YQ,13724198404473,2026-08-26,Harutani,US,CC,2026-09-22 10:34:00,"Delivered; Front Door/Porch -&gt; Your item was delivered at the front door or porch at 10:34 am on September 22; 2026 in KANEOHE; HI 96744.",,,33
+HHWUE6239008301YQ,13724621242745,2026-08-26,Harutani,US,UE,2026-10-23 14:48:00,"Addressee Unknown -&gt; Your item was returned to the sender on October 23; 2026 at 2:48 pm in HOLUALOA; HI 96725 because the addressee was not known at the delivery address noted on the package.",,,26
+HHWUE6240000201YQ,8200467153239,2026-08-28,Shirosuki,US,CC,2026-09-30 16:46:00,"Delivered; To Original Sender -&gt; Your item has been delivered to the original sender at 4:46 pm on September 30; 2026 in ANCHORAGE; AK 99502.",,,63
+HHWUE6240017401YQ,13725092512121,2026-08-27,Harutani,US,CC,2026-09-14 09:26:00,"Delivered; In/At Mailbox -&gt; Your item was delivered in or at the mailbox at 9:26 am on September 14; 2026 in LAIE; HI 96762.",,,16
+HHWUE6240017501YQ,13726458052985,2026-08-27,Harutani,US,CC,2026-10-02 12:03:00,"Delivered; In/At Mailbox -&gt; Your item was delivered in or at the mailbox at 12:03 pm on October 2; 2026 in WASILLA; AK 99654.",,,38
+HHWUE6241018201YQ,8208895508823,2026-08-29,Shirosuki,US,CC,2026-09-14 13:43:00,"Delivered; In/At Mailbox -&gt; Your item was delivered in or at the mailbox at 1:43 pm on September 14; 2026 in WASILLA; AK 99623.",,,17
+HHWUE6242000001YQ,13735601897849,2026-08-29,Harutani,US,CC,2026-09-14 14:17:00,"Delivered; In/At Mailbox -&gt; Your item was delivered in or at the mailbox at 2:17 pm on September 14; 2026 in HONOLULU; HI 96816.",,,18
+HHWUE6243003901YQ,13739527831929,2026-08-30,Harutani,US,CC,2026-09-18 06:53:00,"Delivered; PO Box -&gt; Your item has been delivered and is available at a PO Box at 6:53 am on September 18; 2026 in PALMER; AK 99645.",,,18
+HHWUE6244007501YQ,13751328080249,2026-08-31,Harutani,US,UE,2026-09-29 15:40:00,"Return to Sender Processed -&gt; The return on your item was processed on September 29; 2026 at 3:40 pm in HONOLULU; HI 96813.",,,69
+HHWUE6244017701YQ,13752190206329,2026-09-01,Harutani,US,CC,2026-09-18 11:06:00,"Delivered; In/At Mailbox -&gt; Your item was delivered in or at the mailbox at 11:06 am on September 18; 2026 in KAILUA; HI 96734.",,,21
+HHWUE6248014901YQ,13766322454905,2026-09-03,Harutani,US,CC,2026-10-03 12:51:00,"Delivered; Front Door/Porch -&gt; Your item was delivered at the front door or porch at 12:51 pm on October 3; 2026 in HONOLULU; HI 96822.",,,35
+HHWUE6248015001YQ,13770068951417,2026-09-04,Harutani,US,CC,2026-10-15 17:22:00,"Delivered; Individual Picked Up at Postal Facility -&gt; Your item was picked up at a postal facility at 5:22 pm on October 15; 2026 in FAIRBANKS; AK 99710.",,,52
+HHWUE6252007201YQ,8206828994903,2026-08-29,Shirosuki,US,ND,2026-10-25 16:57:00,"Departed USPS Facility -&gt; Your item departed our USPS facility in CHICAGO IL DISTRIBUTION CENTER on October 25; 2026 at 4:57 pm. The item is currently in transit to the destination.",,,45
+HHWUE6254013801YQ,13695981191545_1,2026-08-20,Harutani,US,CC,2026-10-09 09:46:00,"Delivered; Left with Individual -&gt; Your item was delivered to an individual at the address at 9:46 am on October 9; 2026 in HOMER; AK 99603.",,,33
+HHWPZ6264011001YQ,13879913873785,2026-09-20,Harutani,US,AF,2026-09-23 09:46:55,"已入仓",,,2
+HHWPZ6264031901YQ,13880700993913,2026-09-20,Harutani,US,CC,2026-10-20 12:36:00,"Delivered; Individual Picked Up at Post Office -&gt; Your item was picked up at the post office at 12:36 pm on October 20; 2026 in BANDERA; TX 78003.",,,36
+SWX109520000188981588,8295066075479,2026-09-23,Shirosuki,US,CC,2026-10-17 11:31:00,"Delivered",,,26
+SWX654830000188815906,8295686635863,2026-09-23,Shirosuki,US,CC,2026-10-08 12:05:00,"Delivered",,,23
+HHWUE6269010402YQ,8242264637783,2026-09-07,Shirosuki,US,CC,2026-10-23 09:02:00,"Delivered; Parcel Locker -&gt; Your item was delivered to a parcel locker at 9:02 am on October 23; 2026 in WASILLA; AK 99623.",,,42
+HHWPZ6269067401YQ,13902903968121,2026-09-26,Harutani,US,CC,2026-10-19 11:57:00,"Delivered; Parcel Locker -&gt; Your item was delivered to a parcel locker at 11:57 am on October 19; 2026 in SALEM; OR 97304.",,,21
+SWX655590000195060674,8306677481815,2026-09-27,Shirosuki,US,CC,2026-10-17 10:04:00,"Delivered",,,26
+HHWYM6271069201YQ,8305908056407,2026-09-26,Shirosuki,US,IR,2026-09-28 16:04:03,"运单电子信息已收到",,,1
+SWX058150000200191391,8333694173527,2026-10-01,Shirosuki,US,CC,2026-10-24 12:22:00,"Parcel has been delivered.(Front door)",,,21
+HHWUE6276013401YQ,13928193917305,2026-10-02,Harutani,US,QF,2026-10-24 11:54:23,"已起飞",,,7
+SWX653810000200191371,8325690884439,2026-09-29,Shirosuki,US,CC,2026-10-24 13:58:00,"Parcel has been delivered.(Front door)",,,22
+SWX525940000200191311,8333305184599,2026-10-01,Shirosuki,US,CC,2026-10-22 19:47:00,"Parcel has been delivered.(Front door)",,,22
+HHWUE6276018501YQ,13900122685817_2,2026-09-25,Harutani,US,ND,2026-10-22 18:43:00,"Departed USPS Facility -&gt; Your item departed our USPS facility in SEATTLE WA DISTRIBUTION CENTER on October 22; 2026 at 6:43 pm. The item is currently in transit to the destination.",,,29
+HHWYM6279050101YQ,8345975521623,2026-10-04,Shirosuki,US,ND,2026-10-21 15:08:00,"Arrived at overseas processing center.",,,13

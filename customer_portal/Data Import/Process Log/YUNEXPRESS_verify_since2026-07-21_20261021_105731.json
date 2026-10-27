@@ -1,0 +1,18 @@
+{
+  "summary": {
+    "checked": 92,
+    "destOk": 91,
+    "statusOk": 92,
+    "fatal": 1
+  },
+  "bad": {
+    "missingInDb": [],
+    "destMismatch": [],
+    "statusMismatch": [],
+    "nullStatus": [],
+    "emptyDest": [
+      "YT2627900711950816"
+    ],
+    "invalidEnum": []
+  }
+}

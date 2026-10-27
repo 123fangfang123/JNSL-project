@@ -1,0 +1,14 @@
+tracking_no,transaction_id,order_date,store_name,country,status,latest_date,latest_comment,dest_tracking,provider_code,track_count
+HHWYM6229025301YQ,8154271187287,,,US,IR,2026-08-17 16:21:07,"运单电子信息已收到",,,1
+HHWUE6229011901YQ,8159451218263,,,US,CC,2026-09-30 12:24:00,"Delivered; Left with Individual -&gt; Your item was delivered to an individual at the address at 12:24 pm on September 30; 2026 in BREMERTON; WA 98312.",,,70
+HHWPZ6233106201YQ,13696101515641,,,US,IR,2026-08-21 22:37:07,"运单电子信息已收到",,,1
+HHWUE6234004901YQ,13699021111673,,,US,CC,2026-09-05 10:39:00,"Delivered; Individual Picked Up at Post Office -&gt; Your item was picked up at the post office at 10:39 am on September 5; 2026 in GIRDWOOD; AK 99587.",,,20
+HHWUE6235006501YQ,8180935000407,,,US,CC,2026-09-04 12:18:00,"Delivered; Front Door/Porch -&gt; Your item was delivered at the front door or porch at 12:18 pm on September 4; 2026 in ANCHORAGE; AK 99508.",,,16
+HHWUE6234004801YQ,8177483874647,,,US,CC,2026-09-04 10:08:00,"Delivered; In/At Mailbox -&gt; Your item was delivered in or at the mailbox at 10:08 am on September 4; 2026 in HALEIWA; HI 96712.",,,20
+HHWUE6236019901YQ,8182784131415,,,US,FK,2026-09-04 06:29:05,"In Transit to Next Facility",,,12
+HHWUE6238020101YQ,8193923842391,,,US,CC,2026-09-18 09:16:00,"Delivered; In/At Mailbox -&gt; Your item was delivered in or at the mailbox at 9:16 am on September 18; 2026 in AIEA; HI 96701.",,,34
+HHWUE6238020301YQ,13715655098745,,,US,CC,2026-09-10 09:49:00,"Delivered; In/At Mailbox -&gt; Your item was delivered in or at the mailbox at 9:49 am on September 10; 2026 in HALEIWA; HI 96712.",,,29
+HHWUE6239005401YQ,13724198404473,,,US,CC,2026-09-22 10:34:00,"Delivered; Front Door/Porch -&gt; Your item was delivered at the front door or porch at 10:34 am on September 22; 2026 in KANEOHE; HI 96744.",,,33
+HHWUE6233009102YQ,13695981191545,,,US,CC,2026-09-17 09:12:00,"Delivered; Left with Individual -&gt; Your item was delivered to an individual at the address at 9:12 am on September 17; 2026 in HOMER; AK 99603.",,,45
+HHWUE6239008301YQ,13724621242745,,,US,UE,2026-09-28 13:13:00,"Insufficient Address -&gt; Your item was returned to the sender on September 28; 2026 at 1:13 pm in HOLUALOA; HI 96725 because of an incomplete address.",,,24
+HHWUE6240000101YQ,13727909216633,,,US,FK,2026-09-16 04:20:22,"In Transit to Next Facility",,,11

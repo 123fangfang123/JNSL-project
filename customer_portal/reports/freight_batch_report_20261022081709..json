@@ -1,0 +1,35 @@
+{
+  "report_time": "2026-10-22T08:17:09.531Z",
+  "dry_run": false,
+  "carriers": [
+    "HH EXPRESS",
+    "YANWEN",
+    "YUNExpress"
+  ],
+  "summary": {
+    "total_missing": 11,
+    "carriers": {
+      "YANWEN": {
+        "requested": 11,
+        "success": 0,
+        "no_billing": 11,
+        "failed": 0,
+        "errors": [],
+        "no_billing_tracking_nos": [
+          "UL612103281YP",
+          "UL611204289YP",
+          "UL607767907YP",
+          "UL607521395YP",
+          "UL609894863YP",
+          "UL606750896YP",
+          "UL608200485YP",
+          "UL603477918YP",
+          "UL603330166YP",
+          "UL604917275YP",
+          "UL603300796YP"
+        ]
+      }
+    }
+  },
+  "elapsed_seconds": 5
+}

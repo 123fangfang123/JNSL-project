@@ -1,0 +1,16 @@
+{
+  "summary": {
+    "checked": 0,
+    "destOk": 0,
+    "statusOk": 0,
+    "fatal": 0
+  },
+  "bad": {
+    "missingInDb": [],
+    "destMismatch": [],
+    "statusMismatch": [],
+    "nullStatus": [],
+    "emptyDest": [],
+    "invalidEnum": []
+  }
+}

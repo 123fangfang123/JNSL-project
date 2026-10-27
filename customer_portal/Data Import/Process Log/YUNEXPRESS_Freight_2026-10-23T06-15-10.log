@@ -1,0 +1,29 @@
+[2026-10-23 06:15:07] === YUNExpress freight import (Insert-Only) ===
+[2026-10-23 06:15:07] 
+[2026-10-23 06:15:07] Step 1: Read Excel...
+[2026-10-23 06:15:07]    Sheet: 运输服务扣费汇总, Headers: 25, Rows: 261
+[2026-10-23 06:15:07] 
+[2026-10-23 06:15:07] Step 2: Identify carrier...
+[2026-10-23 06:15:07]    Carrier: YUNExpress
+[2026-10-23 06:15:07]    Matched: 发生时间 -> YUNExpress, 交易金额 -> YUNExpress
+[2026-10-23 06:15:07]    Weight unit: kg
+[2026-10-23 06:15:07]    Other fee: freight - freight_fee - registered_fee
+[2026-10-23 06:15:07] 
+[2026-10-23 06:15:07] Step 3: Parse data...
+[2026-10-23 06:15:07]    Valid: 256, Skipped rows: 5
+[2026-10-23 06:15:07] 
+[2026-10-23 06:15:07] Step 4: Insert to freight (skip existing)...
+[2026-10-23 06:15:10]    Already existing: 255/256
+[2026-10-23 06:15:10]    SKIP (exists): 255 records (summary)
+[2026-10-23 06:15:10]    To insert: 1
+[2026-10-23 06:15:10]    Result: inserted=1, skipped=255, errors=0
+[2026-10-23 06:15:10] 
+[2026-10-23 06:15:10] ========== Report ==========
+[2026-10-23 06:15:10] File: 云途02e2a6d574cc47bdb971d4dff66ff563.xlsx
+[2026-10-23 06:15:10] Carrier: YUNExpress
+[2026-10-23 06:15:10] Total rows: 261
+[2026-10-23 06:15:10] Valid records: 256
+[2026-10-23 06:15:10] Inserted: 1
+[2026-10-23 06:15:10] Skipped (exists): 255
+[2026-10-23 06:15:10] Errors: 0
+[2026-10-23 06:15:10] ============================

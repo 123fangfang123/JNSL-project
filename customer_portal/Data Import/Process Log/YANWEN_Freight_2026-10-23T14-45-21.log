@@ -1,0 +1,32 @@
+[2026-10-23 14:45:14] === YANWEN freight import (v2.7) ===
+[2026-10-23 14:45:14] 
+[2026-10-23 14:45:14] Step 1: Read Excel...
+[2026-10-23 14:45:14]    Sheet: 运单信息, Headers: 16, Rows: 685
+[2026-10-23 14:45:14] 
+[2026-10-23 14:45:14] Step 2: Identify carrier...
+[2026-10-23 14:45:14]    Carrier: YANWEN
+[2026-10-23 14:45:14]    Matched: 账单日期 -> YANWEN, 账单金额(元) -> YANWEN, 转单号 -> XJ LOGISTICS
+[2026-10-23 14:45:14]    Weight unit: g
+[2026-10-23 14:45:14]    Other fee: null
+[2026-10-23 14:45:14] 
+[2026-10-23 14:45:14] Step 3: Parse data (v2.7)...
+[2026-10-23 14:45:14]    Fee columns: 账单金额(元)
+[2026-10-23 14:45:14]    Valid: 684, Skipped rows: 1, All-zero skipped: 0
+[2026-10-23 14:45:14]    Sample: {"tracking_no":"UL369985254YP","billing_date":"2026-08-02","weight_g":936,"freight":109.09,"freight_fee":null,"registered_fee":null,"other_fee":null}
+[2026-10-23 14:45:14] 
+[2026-10-23 14:45:14] Step 4: Insert to freight (skip existing)...
+[2026-10-23 14:45:21]    Already existing: 681/684
+[2026-10-23 14:45:21]    SKIP (exists): 683 records (summary)
+[2026-10-23 14:45:21]    To insert: 1
+[2026-10-23 14:45:21]    Result: inserted=1, skipped=683, errors=0
+[2026-10-23 14:45:21] 
+[2026-10-23 14:45:21] ========== Report ==========
+[2026-10-23 14:45:21] File: Yanwen_freight_0701-0802 - copy.xlsx
+[2026-10-23 14:45:21] Carrier: YANWEN
+[2026-10-23 14:45:21] Total rows: 685
+[2026-10-23 14:45:21] Valid records: 684
+[2026-10-23 14:45:21] All-zero skipped: 0
+[2026-10-23 14:45:21] Inserted: 1
+[2026-10-23 14:45:21] Skipped (exists): 683
+[2026-10-23 14:45:21] Errors: 0
+[2026-10-23 14:45:21] ============================

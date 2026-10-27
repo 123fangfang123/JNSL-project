@@ -1,0 +1,54 @@
+tracking_no,transaction_id,process_date,channel_id,country,status,latest_date,latest_comment,dest_tracking,provider_code,track_count
+HHWPZ6283102702YQ,13957135008121,2026-10-10,智优选专线-特货,US,IR,2026-10-10 17:29:04,"运单电子信息已收到",,,1
+HHWPZ6284048301YQ,13961450160505,2026-10-11,智优选专线-特货,US,IR,2026-10-11 22:59:04,"运单电子信息已收到",,,1
+HHWPZ6285006702YQ,13962592747897,2026-10-12,智优选专线-特货,US,IR,2026-10-12 04:50:04,"运单电子信息已收到",,,1
+HHWPZ6285008301YQ,13962699014521,2026-10-12,智优选专线-特货,US,IR,2026-10-12 05:46:05,"运单电子信息已收到",,,1
+HHWPZ6285014001YQ,13962866950521,2026-10-12,智优选专线-特货,US,IR,2026-10-12 08:08:12,"运单电子信息已收到",,,1
+HHWPZ6285181702YQ,13962934583673,2026-10-12,智优选专线-特货,US,IR,2026-10-12 11:04:03,"运单电子信息已收到",,,1
+HHWPZ6267110501YQ,13894974800249,2026-09-24,智优选专线-特货,US,AF,2026-10-04 12:07:55,"已入仓",,,2
+HHWPZ6206051002YQ,7486999462081,2026-07-25,智优选专线-特货,US,IR,2026-07-25 10:53:21,"运单电子信息已收到",,,1
+HHWPZ6206049401YQ,7486675779777,2026-07-25,智优选专线-特货,US,IR,2026-07-25 10:53:14,"运单电子信息已收到",,,1
+HHWPZ6206052102YQ,7486632624321,2026-07-25,智优选专线-特货,US,IR,2026-07-25 10:53:23,"运单电子信息已收到",,,1
+HHWPZ6205060901YQ,7485063692481,2026-07-24,智优选专线-特货,US,IR,2026-07-24 12:48:03,"运单电子信息已收到",,,1
+HHWPZ6203061701YQ,7480335761601,2026-07-22,智优选专线-特货,US,IR,2026-07-22 14:16:04,"运单电子信息已收到",,,1
+HHWPZ6205074301YQ,7479701995713,2026-07-24,智优选专线-特货,US,IR,2026-07-24 16:32:09,"运单电子信息已收到",,,1
+HHWPZ6203056801YQ,7476675805377,2026-07-22,智优选专线-特货,US,IR,2026-07-22 11:34:16,"运单电子信息已收到",,,1
+HHWUE6200001001YQ,7435357159617,,智惠选专线-特货(不限偏远),US,CC,2026-08-04 12:50:00,"Delivered; In/At Mailbox -&gt; Your item was delivered in or at the mailbox at 12:50 pm on August 4; 2026 in KIHEI; HI 96753.",,,20
+HHWUE6203006402YQ,7454433312961,,智惠选专线-特货(不限偏远),US,CC,2026-08-13 14:47:00,"Delivered; In/At Mailbox -&gt; Your item was delivered in or at the mailbox at 2:47 pm on August 13; 2026 in CAPTAIN COOK; HI 96704.",,,43
+HHWUE6200000902YQ,7453516136641,,智惠选专线-特货(不限偏远),US,CC,2026-08-07 14:01:00,"Delivered; Parcel Locker -&gt; Your item was delivered to a parcel locker at 2:01 pm on August 7; 2026 in HONOLULU; HI 96814.",,,17
+HHWUE6200000501YQ,7452187885761,,智惠选专线-特货(不限偏远),US,CC,2026-08-07 14:18:00,"Delivered; In/At Mailbox -&gt; Your item was delivered in or at the mailbox at 2:18 pm on August 7; 2026 in KOLOA; HI 96756.",,,20
+HHWUE6200000901YQ,7451646951617,,智惠选专线-特货(不限偏远),US,CC,2026-08-07 10:31:00,"Delivered; In/At Mailbox -&gt; Your item was delivered in or at the mailbox at 10:31 am on August 7; 2026 in HONOLULU; HI 96814.",,,20
+HHWUE6203006401YQ,7450109182145,,智惠选专线-特货(不限偏远),US,IA,2026-08-06 09:24:00,"Processing at USPS Facility -&gt; Your item is being processed at our USPS facility in AMERICAN FORK; UT 84003 on August 6; 2026 at 9:24 am.",,,23
+HHWUE6201043301YQ,7448783356097,,智惠选专线-特货(不限偏远),US,CC,2026-08-09 16:12:00,"Delivered; Front Door/Porch -&gt;Your item was delivered at the front door or porch at 16:12 ON 9-Aug; 2027 in Alaska;99503",,,13
+HHWUE6200000701YQ,7448710774977,,智惠选专线-特货(不限偏远),US,CC,2026-08-07 11:29:00,"Delivered; In/At Mailbox -&gt; Your item was delivered in or at the mailbox at 11:29 am on August 7; 2026 in KALAHEO; HI 96741.",,,18
+HHWUE6200000601YQ,7432106705089,,智惠选专线-特货(不限偏远),US,CC,2026-08-07 14:00:00,"Delivered; Front Door/Porch -&gt; Your item was delivered at the front door or porch at 2:00 pm on August 7; 2026 in AIEA; HI 96701.",,,22
+HHWUE6200004301YQ,7436912033985,,智惠选专线-特货(不限偏远),US,CC,2026-08-09 16:31:00,"Delivered; Front Door/Porch -&gt;Your item was delivered at the front door or porch at 16:31 ON 9-Aug; 2026 in Hawaii;96734",,,13
+HHWUE6200000401YQ,7441726668993,,智惠选专线-特货(不限偏远),US,CC,2026-08-14 06:29:00,"Delivered; In/At Mailbox",,,54
+HHWUE6200004302YQ,7443046465729,,智惠选专线-特货(不限偏远),US,CC,2026-08-08 09:20:00,"Delivered; In/At Mailbox -&gt; Your item was delivered in or at the mailbox at 9:20 am on August 8; 2026 in HONOLULU; HI 96821.",,,17
+HHWUE6200006001YQ,7456286048449,,智惠选专线-特货(不限偏远),US,CC,2026-08-07 09:11:00,"Delivered; Garage / Other Door / Other Location at Address -&gt; Your item was delivered to the garage; other door or an alternate location at the address at 9:11 am on August 7; 2026 in EWA BEACH; HI 96706.",,,22
+HHWUE6201029301YQ,7436602441921,,智惠选专线-特货(不限偏远),US,CC,2026-08-10 10:00:00,"Delivered; Front Door/Porch -&gt;Your item was delivered at the front door or porch at 10:00 ON 10-Aug; 2026 in Hawaii;96720",,,14
+HHWUE6203006201YQ,7479095230657,,智惠选专线-特货(不限偏远),US,CC,2026-08-10 12:22:00,"Delivered; In/At Mailbox -&gt; Your item was delivered in or at the mailbox at 12:22 pm on August 10; 2026 in HONOLULU; HI 96825.",,,21
+HHWUE6203007901YQ,7480416829633,,智惠选专线-特货(不限偏远),US,CC,2026-08-09 13:57:00,"Delivered; Front Door/Porch -&gt;Your item was delivered at the front door or porch at 13:57 ON 9-Aug; 2028 in Hawaii;96816",,,13
+HHWUE6204021301YQ,7481353535681,,智惠选专线-特货(不限偏远),US,CC,2026-08-10 08:10:00,"Delivered; Front Door/Porch -&gt;Your item was delivered at the front door or porch at 08:10 ON 10-Aug; 2027 in Alaska;99504",,,17
+HHWUE6204019101YQ,7459517825217,,智惠选专线-特货(不限偏远),US,CA,2026-08-19 04:34:00,"Arrived at USPS Facility -&gt; Your item arrived at our USPS facility in ANCHORAGE; AK 99503 on August 19; 2026 at 4:34 am. The item is currently in transit to the destination.",,,31
+HHWUE6211008001YQ,8077845365079,,智惠选专线-特货(不限偏远),US,CC,2026-08-26 09:05:00,"Delivered; PO Box -&gt; Your item has been delivered and is available at a PO Box at 9:05 am on August 26; 2026 in STERLING; AK 99672.",,,37
+HHWUE6205005801YQ,7484950151361,,智惠选专线-特货(不限偏远),US,CC,2026-08-15 12:02:00,"Delivered; Front Desk/Reception/Mail Room -&gt; Your item was delivered to the front desk; reception area; or mail room at 12:02 pm on August 15; 2026 in KIHEI; HI 96753.",,,19
+HHWUE6205008201YQ,7435443732673,,智惠选专线-特货(不限偏远),US,CC,2026-08-18 17:40:00,"Delivered; Front Door/Porch -&gt; Your item was delivered at the front door or porch at 5:40 pm on August 18; 2026 in WAILUKU; HI 96793.",,,19
+HHWUE6204019201YQ,7480920637633,,智惠选专线-特货(不限偏远),US,FK,2026-10-17 06:47:26,"In Transit to Next Facility",,,39
+HHWUE6207000501YQ,7489113391297,,智惠选专线-特货(不限偏远),US,CC,2026-09-03 07:47:00,"Delivered; Parcel Locker -&gt; Your item was delivered to a parcel locker at 7:47 am on September 3; 2026 in CRAIG; AK 99921.",,,24
+HHWPZ6207013301YQ,7489367441601,,智优选专线-特货,US,IR,2026-07-26 12:24:09,"运单电子信息已收到",,,1
+HHWUE6217012401YQ,JQD1528,,智惠选专线-特货(不限偏远),US,CC,2026-08-31 16:55:00,"Delivered; In/At Mailbox -&gt; Your item was delivered in or at the mailbox at 4:55 pm on August 31; 2026 in HONOLULU; HI 96825.",,,32
+HHWYM6229025301YQ,8154271187287,,智尚选-内电,US,IR,2026-08-17 16:21:07,"运单电子信息已收到",,,1
+HHWPZ6231102001YQ,7456604127425_1,,智优选专线-特货,US,IR,2026-08-19 16:50:03,"运单电子信息已收到",,,1
+HHWUE6229011901YQ,8159451218263,,智惠选专线-特货(不限偏远),US,CC,2026-09-30 12:24:00,"Delivered; Left with Individual -&gt; Your item was delivered to an individual at the address at 12:24 pm on September 30; 2026 in BREMERTON; WA 98312.",,,70
+HHWPZ6233106201YQ,13696101515641,,智优选专线-特货,US,IR,2026-08-21 22:37:07,"运单电子信息已收到",,,1
+HHWUE6234004901YQ,13699021111673,,智惠选专线-特货(不限偏远),US,CC,2026-09-05 10:39:00,"Delivered; Individual Picked Up at Post Office -&gt; Your item was picked up at the post office at 10:39 am on September 5; 2026 in GIRDWOOD; AK 99587.",,,20
+HHWUE6235006501YQ,8180935000407,,智惠选专线-特货(不限偏远),US,CC,2026-09-04 12:18:00,"Delivered; Front Door/Porch -&gt; Your item was delivered at the front door or porch at 12:18 pm on September 4; 2026 in ANCHORAGE; AK 99508.",,,16
+HHWUE6234004801YQ,8177483874647,,智惠选专线-特货(不限偏远),US,CC,2026-09-04 10:08:00,"Delivered; In/At Mailbox -&gt; Your item was delivered in or at the mailbox at 10:08 am on September 4; 2026 in HALEIWA; HI 96712.",,,20
+HHWUE6236019901YQ,8182784131415,,智惠选专线-特货(不限偏远),US,FK,2026-09-04 06:29:05,"In Transit to Next Facility",,,12
+HHWUE6238020101YQ,8193923842391,,智惠选专线-特货(不限偏远),US,CC,2026-09-18 09:16:00,"Delivered; In/At Mailbox -&gt; Your item was delivered in or at the mailbox at 9:16 am on September 18; 2026 in AIEA; HI 96701.",,,34
+HHWUE6238020301YQ,13715655098745,,智惠选专线-特货(不限偏远),US,CC,2026-09-10 09:49:00,"Delivered; In/At Mailbox -&gt; Your item was delivered in or at the mailbox at 9:49 am on September 10; 2026 in HALEIWA; HI 96712.",,,29
+HHWUE6239005401YQ,13724198404473,,智惠选专线-特货(不限偏远),US,CC,2026-09-22 10:34:00,"Delivered; Front Door/Porch -&gt; Your item was delivered at the front door or porch at 10:34 am on September 22; 2026 in KANEOHE; HI 96744.",,,33
+HHWUE6233009102YQ,13695981191545,,智惠选专线-特货(不限偏远),US,CC,2026-09-17 09:12:00,"Delivered; Left with Individual -&gt; Your item was delivered to an individual at the address at 9:12 am on September 17; 2026 in HOMER; AK 99603.",,,45
+HHWUE6239008301YQ,13724621242745,,智惠选专线-特货(不限偏远),US,UE,2026-09-28 13:13:00,"Insufficient Address -&gt; Your item was returned to the sender on September 28; 2026 at 1:13 pm in HOLUALOA; HI 96725 because of an incomplete address.",,,24
+HHWUE6240000101YQ,13727909216633,,智惠选专线-特货(不限偏远),US,FK,2026-09-16 04:20:22,"In Transit to Next Facility",,,11

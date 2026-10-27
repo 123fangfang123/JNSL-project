@@ -1,0 +1,8 @@
+tracking_no,transaction_id,process_date,channel_id,db_shipment_status,api_status,api_status_desc,query_ok,error_msg
+"HHWPZ6206049401YQ","7486675779777","2026-07-25","智优选专线-特货","created","","","N","Success"
+"HHWPZ6206051002YQ","7486999462081","2026-07-25","智优选专线-特货","created","","","N","Success"
+"HHWPZ6206052102YQ","7486632624321","2026-07-25","智优选专线-特货","created","","","N","Success"
+"HHWPZ6205060901YQ","7485063692481","2026-07-24","智优选专线-特货","created","","","N","Success"
+"HHWPZ6205074301YQ","7479701995713","2026-07-24","智优选专线-特货","created","","","N","Success"
+"HHWPZ6203056801YQ","7476675805377","2026-07-22","智优选专线-特货","created","","","N","Success"
+"HHWPZ6203061701YQ","7480335761601","2026-07-22","智优选专线-特货","created","","","N","Success"

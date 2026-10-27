@@ -1,0 +1,94 @@
+========================================================================
+  雄九 XJ LOGISTICS 运单回写 order_shipment   模式: DRY-RUN（不落库）  [仅 dest_tracking / --no-api]
+========================================================================
+目标       : carrier=XJ LOGISTICS（process_date 全为 NULL，不参与匹配）
+业务规则   : dest_tracking = tracking_no（雄九运单号即尾程跟踪号）
+
+库中当前   : 18 条 XJ LOGISTICS 运单
+数据源     : --no-api（直接读库，仅回写 dest_tracking）
+
+--- 回写计划 ---
+  数据源记录          : 18
+  非 ZS 前缀跳过      : 1
+  库中不存在跳过      : 0
+  需更新记录数        : 17
+  已一致无需更新      : 0
+  ├─ dest_tracking 待写入   : 17 个字段
+  └─ shipment_status 待写入 : 0 个字段
+
+--- 待写入明细 (17) ---
+  ZS15743884899
+      dest_tracking: (null) -> ZS15743884899  [业务规则 dest=tracking_no]
+  ZS16104777299
+      dest_tracking: (null) -> ZS16104777299  [业务规则 dest=tracking_no]
+  ZS16548849799
+      dest_tracking: (null) -> ZS16548849799  [业务规则 dest=tracking_no]
+  ZS16553565199
+      dest_tracking: (null) -> ZS16553565199  [业务规则 dest=tracking_no]
+  ZS16712692499
+      dest_tracking: (null) -> ZS16712692499  [业务规则 dest=tracking_no]
+  ZS17896130499
+      dest_tracking: (null) -> ZS17896130499  [业务规则 dest=tracking_no]
+  ZS18221699899
+      dest_tracking: (null) -> ZS18221699899  [业务规则 dest=tracking_no]
+  ZS18221721199
+      dest_tracking: (null) -> ZS18221721199  [业务规则 dest=tracking_no]
+  ZS18245175899
+      dest_tracking: (null) -> ZS18245175899  [业务规则 dest=tracking_no]
+  ZS18475211599
+      dest_tracking: (null) -> ZS18475211599  [业务规则 dest=tracking_no]
+  ZS18937677399
+      dest_tracking: (null) -> ZS18937677399  [业务规则 dest=tracking_no]
+  ZS18937678799
+      dest_tracking: (null) -> ZS18937678799  [业务规则 dest=tracking_no]
+  ZS18937679599
+      dest_tracking: (null) -> ZS18937679599  [业务规则 dest=tracking_no]
+  ZS19970578899
+      dest_tracking: (null) -> ZS19970578899  [业务规则 dest=tracking_no]
+  ZS19975504799
+      dest_tracking: (null) -> ZS19975504799  [业务规则 dest=tracking_no]
+  ZS19990430299
+      dest_tracking: (null) -> ZS19990430299  [业务规则 dest=tracking_no]
+  ZS23900251599
+      dest_tracking: (null) -> ZS23900251599  [业务规则 dest=tracking_no]
+
+--- 跳过/告警明细 (18) ---
+  9214490323596400313525
+      跳过: 非 ZS 前缀（疑似错挂数据，--include-all 可强制）
+  ZS15743884899
+      shipment_status 跳过: --no-api 模式（IP 白名单未开通，暂不刷状态）
+  ZS16104777299
+      shipment_status 跳过: --no-api 模式（IP 白名单未开通，暂不刷状态）
+  ZS16548849799
+      shipment_status 跳过: --no-api 模式（IP 白名单未开通，暂不刷状态）
+  ZS16553565199
+      shipment_status 跳过: --no-api 模式（IP 白名单未开通，暂不刷状态）
+  ZS16712692499
+      shipment_status 跳过: --no-api 模式（IP 白名单未开通，暂不刷状态）
+  ZS17896130499
+      shipment_status 跳过: --no-api 模式（IP 白名单未开通，暂不刷状态）
+  ZS18221699899
+      shipment_status 跳过: --no-api 模式（IP 白名单未开通，暂不刷状态）
+  ZS18221721199
+      shipment_status 跳过: --no-api 模式（IP 白名单未开通，暂不刷状态）
+  ZS18245175899
+      shipment_status 跳过: --no-api 模式（IP 白名单未开通，暂不刷状态）
+  ZS18475211599
+      shipment_status 跳过: --no-api 模式（IP 白名单未开通，暂不刷状态）
+  ZS18937677399
+      shipment_status 跳过: --no-api 模式（IP 白名单未开通，暂不刷状态）
+  ZS18937678799
+      shipment_status 跳过: --no-api 模式（IP 白名单未开通，暂不刷状态）
+  ZS18937679599
+      shipment_status 跳过: --no-api 模式（IP 白名单未开通，暂不刷状态）
+  ZS19970578899
+      shipment_status 跳过: --no-api 模式（IP 白名单未开通，暂不刷状态）
+  ZS19975504799
+      shipment_status 跳过: --no-api 模式（IP 白名单未开通，暂不刷状态）
+  ZS19990430299
+      shipment_status 跳过: --no-api 模式（IP 白名单未开通，暂不刷状态）
+  ZS23900251599
+      shipment_status 跳过: --no-api 模式（IP 白名单未开通，暂不刷状态）
+
+DRY-RUN 结束，未对数据库做任何修改。确认无误后加 --write 执行。
+耗时: 1.7 秒

@@ -1,0 +1,271 @@
+========================================================================
+  云途 YUNExpress 运单回写 order_shipment   模式: ★ 实际写入 (--write)
+========================================================================
+目标       : carrier=YUNExpress  shipment_status=created  process_date >= 2026-07-21
+
+数据源文件 : YUNEXPRESS_track_created_since2026-07-21_20261021_105714.json
+记录数     : 92
+
+库中当前   : 93 条 (carrier=YUNExpress, process_date >= 2026-07-21)
+
+--- 回写计划 ---
+  数据源记录        : 92
+  API 查询失败跳过  : 0
+  库中不存在跳过    : 0
+  需更新记录数      : 92
+  已一致无需更新    : 0
+  ├─ dest_tracking 待写入   : 91 个字段
+  └─ shipment_status 待写入 : 92 个字段
+
+--- 待写入明细 (92) ---
+  YT2628600709288893
+      shipment_status: created -> shipped  [API T 运输中 -> 运输中]
+      dest_tracking: (null) -> GFUS01078020275457
+  YT2628600710146734
+      shipment_status: created -> shipped  [API T 运输中 -> 运输中]
+      dest_tracking: (null) -> GFES26290184405276
+  YT2627900711950816
+      shipment_status: created -> shipped  [API E 可能异常 -> 异常]
+  YT2627200705705189
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> GFCA01076254656896
+  YT2625300709209188
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 6091526414282
+  YT2625200700937912
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> GFIT26254144126548
+  YT2624700708258030
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> GFUS01071841899584
+  YT2624400705554602
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 9261290358097859017649
+  YT2624100708758016
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 6090626558105
+  YT2623900704156334
+      shipment_status: created -> shipped  [API E 可能异常 -> 异常]
+      dest_tracking: (null) -> CNB30233500
+  YT2623900705100208
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> GFIT26243159235566
+  YT2623800709272104
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> CNB30221846
+  YT2623700705715751
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 00340435067651304788
+  YT2623700706150214
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 6090226395403
+  YT2623700706342191
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 00340435067647514740
+  YT2623701400400723
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 6082826213544
+  YT2623600710324815
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 6090126706273
+  YT2623500700107859
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> CNB30222034
+  YT2623500700307798
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> CNB30222033
+  YT2623300707397458
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 00340435067646078649
+  YT2623301400379769
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 6082726449321
+  YT2623200703961762
+      shipment_status: created -> cancelled  [API R 包裹退回 -> 已退件]
+      dest_tracking: (null) -> 6082326111985
+  YT2623200707685573
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> CNB30213374
+  YT2623200709912900
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 6082526270824
+  YT2623100707603404
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> CNB30213373
+  YT2623101400428107
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 6082326672235
+  YT2623001400437704
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 6082426533655
+  YT2622700704632669
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 031820000106677606
+  YT2622700708183073
+      shipment_status: created -> shipped  [API T 运输中 -> 运输中]
+      dest_tracking: (null) -> 00340435067646449838
+  YT2622600709532312
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 6081526292335
+  YT2622601400387428
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 6081526778728
+  YT2622400704939467
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 63300032915657101243179
+  YT2622300706892070
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 6082026594212
+  YT2622200710006610
+      shipment_status: created -> shipped  [API E 可能异常 -> 异常]
+      dest_tracking: (null) -> CNB30220063
+  YT2622100705367102
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> CNB30188284
+  YT2622100705568212
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> CNB30188286
+  YT2622000703311096
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 6081526670873
+  YT2622000703311245
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 6081526354829
+  YT2622000703328264
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 6081526220848
+  YT2622000703526834
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 6082026517223
+  YT2622000703526842
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 6081526292663
+  YT2622000706037540
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 00340435067644363037
+  YT2621900704071782
+      shipment_status: created -> shipped  [API E 可能异常 -> 异常]
+      dest_tracking: (null) -> CNB30180612
+  YT2621800704495306
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> CNB30188285
+  YT2621800705059317
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 6081326299915
+  YT2621800705257895
+      shipment_status: created -> cancelled  [API R 包裹退回 -> 已退件]
+      dest_tracking: (null) -> 6080926480928
+  YT2621700703283705
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 6081426529231
+  YT2621700707946034
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 6081326829032
+  YT2621600707116606
+      shipment_status: created -> cancelled  [API R 包裹退回 -> 已退件]
+      dest_tracking: (null) -> 6081326259294
+  YT2621600707183861
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 6080726453309
+  YT2621500704670797
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 6080926642342
+  YT2621500704827322
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 01505493722995
+  YT2621500704917206
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> GFIT26220128314688
+  YT2621400702264547
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 6080626203001
+  YT2621400702431062
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> CNB30180657
+  YT2621300703168830
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 6080926319072
+  YT2621200703682949
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 6080526814112
+  YT2621200703682972
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> CNB30174932
+  YT2621200708163572
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 0082800045229701509254
+  YT2621201400411244
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 6080526139502
+  YT2621100704289274
+      shipment_status: created -> shipped  [API E 可能异常 -> 异常]
+      dest_tracking: (null) -> CNB30145775
+  YT2621100704338675
+      shipment_status: created -> shipped  [API E 可能异常 -> 异常]
+      dest_tracking: (null) -> CNB30164129
+  YT2621100705766304
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> GFIT26217113344974
+  YT2621000703832969
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 6080326611387
+  YT2621000706128951
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 6080326661646
+  YT2620900703311321
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 6080526343151
+  YT2620900703501996
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> CNB30164450
+  YT2620900704034310
+      shipment_status: created -> cancelled  [API R 包裹退回 -> 已退件]
+      dest_tracking: (null) -> 6080526234430
+  YT2620900704286027
+      shipment_status: created -> cancelled  [API R 包裹退回 -> 已退件]
+      dest_tracking: (null) -> 00340435067643596269
+  YT2620900706223093
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 00340435067643293519
+  YT2620800710056481
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 6072926355044
+  YT2620801400397888
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 6080326445026
+  YT2620701400386040
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 6072926579879
+  YT2620600702816102
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> CNB30145710
+  YT2620600702956841
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 6073026423779
+  YT2620600703129018
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 6073126872453
+  YT2620600706526459
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 6073026708980
+  YT2620600706721597
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 6073026440744
+  YT2620500703403605
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> GFIT26210188399067
+  YT2620500707058991
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> GFIT26210112418322
+  ... 其余 12 条见结果文件
+
+--- 跳过/告警明细 (1) ---
+  YT2627900711950816
+      dest_tracking 跳过: API 未返回尾程跟踪号
+
+--- 开始写入（并发 50）---
+  提交条数        : 92
+  写入并读回校验通过 : 92
+  失败            : 0
+
+耗时: 3.0 秒

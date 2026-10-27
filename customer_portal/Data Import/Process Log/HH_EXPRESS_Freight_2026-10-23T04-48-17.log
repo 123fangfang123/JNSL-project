@@ -1,0 +1,42 @@
+[2026-10-23 04:48:15] === HH Freight import (Insert-Only) ===
+[2026-10-23 04:48:15] 
+[2026-10-23 04:48:15] Step 1: Read Excel...
+[2026-10-23 04:48:15]    Sheet: 费用
+[2026-10-23 04:48:15]    Headers (13): 到货时间, 客户单号, 运单号, 跟踪单号, 销售产品, 货物类型, 目的国家, 计费重量, 运费, 燃油费, 挂号费, 其它杂费, 总费用
+[2026-10-23 04:48:15]    Data rows: 3
+[2026-10-23 04:48:15] 
+[2026-10-23 04:48:15] Step 2: Identify carrier...
+[2026-10-23 04:48:15]    Carrier: HH EXPRESS
+[2026-10-23 04:48:15]    Matched: 到货时间 -> HH EXPRESS, 总费用 -> HH EXPRESS, 其它杂费 -> HH EXPRESS
+[2026-10-23 04:48:15]    Weight unit: kg
+[2026-10-23 04:48:15]    Other fee: freight - freight_fee - registered_fee
+[2026-10-23 04:48:15]    Column check:
+[2026-10-23 04:48:15]    OK 运单号 -> tracking_no
+[2026-10-23 04:48:15]    OK 到货时间 -> billing_date
+[2026-10-23 04:48:15]    OK 计费重量 -> weight_g
+[2026-10-23 04:48:15]    OK 总费用 -> freight
+[2026-10-23 04:48:15]    OK 运费 -> freight_fee
+[2026-10-23 04:48:15]    OK 挂号费 -> registered_fee
+[2026-10-23 04:48:15] 
+[2026-10-23 04:48:15] Step 3: Parse data...
+[2026-10-23 04:48:15]    Row 2: no freight, skip
+[2026-10-23 04:48:15]    Row 3: no freight, skip
+[2026-10-23 04:48:15]    Valid records: 1
+[2026-10-23 04:48:15]    Skipped rows: 2
+[2026-10-23 04:48:15]    Sample: {"tracking_no":"HHWPZ6203055201YQ","billing_date":"2026-07-29","weight_g":300,"freight":79.4,"freight_fee":41.4,"registered_fee":38,"other_fee":0}
+[2026-10-23 04:48:15] 
+[2026-10-23 04:48:15] Step 4: Insert to freight (skip existing)...
+[2026-10-23 04:48:16]    Already existing: 0/1
+[2026-10-23 04:48:16]    To insert: 1
+[2026-10-23 04:48:17]    Result: inserted=1, skipped=0, errors=0
+[2026-10-23 04:48:17] 
+[2026-10-23 04:48:17] Step 5: Report
+[2026-10-23 04:48:17] ========== Report ==========
+[2026-10-23 04:48:17] File: HH_Freight_07 - copy.xls
+[2026-10-23 04:48:17] Carrier: HH EXPRESS
+[2026-10-23 04:48:17] Total rows: 3
+[2026-10-23 04:48:17] Valid records: 1
+[2026-10-23 04:48:17] Inserted: 1
+[2026-10-23 04:48:17] Skipped (exists): 0
+[2026-10-23 04:48:17] Errors: 0
+[2026-10-23 04:48:17] ============================

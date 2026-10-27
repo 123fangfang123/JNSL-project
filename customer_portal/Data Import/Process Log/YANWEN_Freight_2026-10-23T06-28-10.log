@@ -1,0 +1,40 @@
+[2026-10-23 06:28:05] === YANWEN freight import (Insert-Only, v2.5) ===
+[2026-10-23 06:28:05] 
+[2026-10-23 06:28:05] Step 1: Read Excel...
+[2026-10-23 06:28:05]    Sheet: 运单信息, Headers: 16, Rows: 685
+[2026-10-23 06:28:05]    Headers: 发货账号, 运单号, 订单号, 转单号, 流水号, 产品名称, 目的地, 实际重量(g), 计费重量(g), 长(cm), 宽(cm), 高(cm), 计费时间, 账单日期, 账单金额(元), 费用类型
+[2026-10-23 06:28:05] 
+[2026-10-23 06:28:05] Step 2: Identify carrier...
+[2026-10-23 06:28:05]    Carrier: YANWEN
+[2026-10-23 06:28:05]    Matched: 账单日期 -> YANWEN, 账单金额(元) -> YANWEN, 转单号 -> XJ LOGISTICS
+[2026-10-23 06:28:05]    Column mapping: {"运单号":"tracking_no","账单日期":"billing_date","计费重量(g)":"weight_g","账单金额(元)":"freight"}
+[2026-10-23 06:28:05]    Weight unit: g
+[2026-10-23 06:28:05]    Other fee: null
+[2026-10-23 06:28:05]    Column check:
+[2026-10-23 06:28:05]    OK 运单号 -> tracking_no
+[2026-10-23 06:28:05]    OK 账单日期 -> billing_date
+[2026-10-23 06:28:05]    OK 计费重量(g) -> weight_g
+[2026-10-23 06:28:05]    OK 账单金额(元) -> freight
+[2026-10-23 06:28:05] 
+[2026-10-23 06:28:05] Step 3: Parse data (v2.5: preserve 0, null for unmapped)...
+[2026-10-23 06:28:05]    Row 686: no tracking_no, skip
+[2026-10-23 06:28:05]    Valid: 684, Skipped rows: 1
+[2026-10-23 06:28:05]    Zero values found: 0
+[2026-10-23 06:28:05]    Sample: {"tracking_no":"UL369985254YP","billing_date":"2026-08-02","weight_g":936,"freight":109.09,"freight_fee":null,"registered_fee":null,"other_fee":null}
+[2026-10-23 06:28:05] 
+[2026-10-23 06:28:05] Step 4: Insert to freight (skip existing)...
+[2026-10-23 06:28:09]    Already existing: 681/684
+[2026-10-23 06:28:09]    SKIP (exists): 683 records (summary)
+[2026-10-23 06:28:09]    To insert: 1
+[2026-10-23 06:28:10]    Result: inserted=1, skipped=683, errors=0
+[2026-10-23 06:28:10] 
+[2026-10-23 06:28:10] ========== Report ==========
+[2026-10-23 06:28:10] File: Yanwen_freight_0701-0802 - copy.xlsx
+[2026-10-23 06:28:10] Carrier: YANWEN
+[2026-10-23 06:28:10] Total rows: 685
+[2026-10-23 06:28:10] Valid records: 684
+[2026-10-23 06:28:10] Zero values: 0
+[2026-10-23 06:28:10] Inserted: 1
+[2026-10-23 06:28:10] Skipped (exists): 683
+[2026-10-23 06:28:10] Errors: 0
+[2026-10-23 06:28:10] ============================

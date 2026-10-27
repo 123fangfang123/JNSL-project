@@ -1,0 +1,34 @@
+[2026-10-23 06:37:34] === HH EXPRESS freight import (v2.7) ===
+[2026-10-23 06:37:34] 
+[2026-10-23 06:37:34] Step 1: Read Excel...
+[2026-10-23 06:37:34]    Sheet: 费用, Headers: 13, Rows: 3
+[2026-10-23 06:37:34] 
+[2026-10-23 06:37:34] Step 2: Identify carrier...
+[2026-10-23 06:37:34]    Carrier: HH EXPRESS
+[2026-10-23 06:37:34]    Matched: 到货时间 -> HH EXPRESS, 总费用 -> HH EXPRESS, 其它杂费 -> HH EXPRESS
+[2026-10-23 06:37:34]    Weight unit: kg
+[2026-10-23 06:37:34]    Other fee: freight - freight_fee - registered_fee
+[2026-10-23 06:37:34] 
+[2026-10-23 06:37:34] Step 3: Parse data (v2.7: FEE_COLUMNS all-zero check)...
+[2026-10-23 06:37:34]    Fee columns to check: 总费用, 运费, 燃油费, 挂号费, 其它杂费
+[2026-10-23 06:37:34]    Row 2: all fees zero, skip: HHWPZ6203055601YQ
+[2026-10-23 06:37:34]    Row 3: all fees zero, skip: HHWPZ6205072602YQ
+[2026-10-23 06:37:34]    Valid: 1, Skipped rows: 0, All-zero skipped: 2
+[2026-10-23 06:37:34]    Sample: {"tracking_no":"HHWPZ6203055201YQ","billing_date":"2026-07-29","weight_g":0.3,"freight":79.4,"freight_fee":41.4,"registered_fee":38,"other_fee":0}
+[2026-10-23 06:37:34] 
+[2026-10-23 06:37:34] Step 4: Insert to freight (skip existing)...
+[2026-10-23 06:37:36]    Already existing: 1/1
+[2026-10-23 06:37:36]    SKIP (exists): HHWPZ6203055201YQ
+[2026-10-23 06:37:36]    No new records to insert
+[2026-10-23 06:37:36]    Result: inserted=0, skipped=1, errors=0
+[2026-10-23 06:37:36] 
+[2026-10-23 06:37:36] ========== Report ==========
+[2026-10-23 06:37:36] File: HH_Freight_07 - copy.xls
+[2026-10-23 06:37:36] Carrier: HH EXPRESS
+[2026-10-23 06:37:36] Total rows: 3
+[2026-10-23 06:37:36] Valid records: 1
+[2026-10-23 06:37:36] All-zero skipped: 2
+[2026-10-23 06:37:36] Inserted: 0
+[2026-10-23 06:37:36] Skipped (exists): 1
+[2026-10-23 06:37:36] Errors: 0
+[2026-10-23 06:37:36] ============================

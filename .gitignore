@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+customer_portal/tools/node_modules/
+
+# Next.js build output
+.next/
+out/
+
+# Environment variables (NEVER push secrets)
+.env.local
+.env*.local
+
+# IDE
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+npm-debug.log*
+
+# Vercel
+.vercel
+
+# Internal tools with hardcoded secrets
+customer_portal/tools/
+customer_portal/.qoder/
+
+# API KEY files
+customer_portal/*API KEY*

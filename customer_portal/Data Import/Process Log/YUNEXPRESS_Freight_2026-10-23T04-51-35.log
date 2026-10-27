@@ -1,0 +1,51 @@
+[2026-10-23 04:51:30] === YUNExpress freight import (Insert-Only) ===
+[2026-10-23 04:51:30] 
+[2026-10-23 04:51:30] Step 1: Read Excel...
+[2026-10-23 04:51:30]    Sheet: 运输服务扣费汇总
+[2026-10-23 04:51:30]    Headers (25): 交易类型, 发生时间, 交易产品, 国家代码, 国家名称, 币种代码, 客户单号, 运单号, 跟踪号, 计费重, 体积重, 实重, 交易金额, 运费, 燃油费, 挂号费, 处理费, VAT增值税, 重派费, 关税预付手续费, 偏远附加费, 退回费用, 特殊产品加收费, 其他费, 备注
+[2026-10-23 04:51:30]    Data rows: 261
+[2026-10-23 04:51:30] 
+[2026-10-23 04:51:30] Step 2: Identify carrier...
+[2026-10-23 04:51:30]    Carrier: YUNExpress
+[2026-10-23 04:51:30]    Matched: 发生时间 -> YUNExpress, 交易金额 -> YUNExpress
+[2026-10-23 04:51:30]    Weight unit: kg
+[2026-10-23 04:51:30]    Other fee: freight - freight_fee - registered_fee
+[2026-10-23 04:51:30]    Column check:
+[2026-10-23 04:51:30]    OK 运单号 -> tracking_no
+[2026-10-23 04:51:30]    OK 发生时间 -> billing_date
+[2026-10-23 04:51:30]    OK 计费重 -> weight_g
+[2026-10-23 04:51:30]    OK 交易金额 -> freight
+[2026-10-23 04:51:30]    OK 运费 -> freight_fee
+[2026-10-23 04:51:30]    OK 挂号费 -> registered_fee
+[2026-10-23 04:51:30] 
+[2026-10-23 04:51:30] Step 3: Parse data...
+[2026-10-23 04:51:30]    Row 8: no freight, skip
+[2026-10-23 04:51:30]    Row 154: no freight, skip
+[2026-10-23 04:51:30]    Row 155: no freight, skip
+[2026-10-23 04:51:30]    Row 169: no freight, skip
+[2026-10-23 04:51:30]    Row 236: no freight, skip
+[2026-10-23 04:51:30]    Valid records: 256
+[2026-10-23 04:51:30]    Skipped rows: 5
+[2026-10-23 04:51:30]    Sample: {"tracking_no":"YT2621500710143136","billing_date":"2026-09-01","weight_g":1777,"freight":2,"freight_fee":null,"registered_fee":null}
+[2026-10-23 04:51:30]    Sample2: {"tracking_no":"YT2623600710324815","billing_date":"2026-09-01","weight_g":1600,"freight":214.21,"freight_fee":120,"registered_fee":40,"other_fee":54.21}
+[2026-10-23 04:51:30] 
+[2026-10-23 04:51:30] Step 4: Insert to freight (skip existing)...
+[2026-10-23 04:51:33]    Already existing: 5/256
+[2026-10-23 04:51:33]    SKIP (exists): YT2621500710143136
+[2026-10-23 04:51:33]    SKIP (exists): YT2624400705554602
+[2026-10-23 04:51:33]    SKIP (exists): YT2624700708258030
+[2026-10-23 04:51:33]    SKIP (exists): YT2625200700937912
+[2026-10-23 04:51:33]    SKIP (exists): YT2625300709209188
+[2026-10-23 04:51:33]    To insert: 251
+[2026-10-23 04:51:35]    Result: inserted=251, skipped=5, errors=0
+[2026-10-23 04:51:35] 
+[2026-10-23 04:51:35] Step 5: Report
+[2026-10-23 04:51:35] ========== Report ==========
+[2026-10-23 04:51:35] File: 云途02e2a6d574cc47bdb971d4dff66ff563.xlsx
+[2026-10-23 04:51:35] Carrier: YUNExpress
+[2026-10-23 04:51:35] Total rows: 261
+[2026-10-23 04:51:35] Valid records: 256
+[2026-10-23 04:51:35] Inserted: 251
+[2026-10-23 04:51:35] Skipped (exists): 5
+[2026-10-23 04:51:35] Errors: 0
+[2026-10-23 04:51:35] ============================

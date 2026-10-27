@@ -1,0 +1,33 @@
+========================================================================
+  云途 YUNExpress 运单回写 order_shipment   模式: DRY-RUN（不落库）
+========================================================================
+目标       : carrier=YUNExpress  process_date=2026-01-15
+限定运单   : 3 条 -> YT2601500702042464, YT2601500701870139, YT2601500703032027
+
+数据源文件 : YUNEXPRESS_track_2026-01-15_20261019_165757.json
+记录数     : 65
+
+库中当前   : 65 条
+
+--- 回写计划 ---
+  数据源记录        : 65
+  API 查询失败跳过  : 0
+  库中不存在跳过    : 0
+  需更新记录数      : 3
+  已一致无需更新    : 0
+  ├─ dest_tracking 待写入   : 3 个字段
+  └─ shipment_status 待写入 : 3 个字段
+
+--- 待写入明细 (3) ---
+  YT2601500701870139
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> CB082909753IE
+  YT2601500702042464
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 00340434518429947429
+  YT2601500703032027
+      shipment_status: created -> shipped  [API D 投递成功 -> 已签收]
+      dest_tracking: (null) -> 9261290306531781936687
+
+DRY-RUN 结束，未对数据库做任何修改。确认无误后加 --write 执行。
+耗时: 1.0 秒

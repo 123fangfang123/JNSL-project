@@ -1,0 +1,40 @@
+========================================================================
+  云途 YUNExpress 运单回写 order_shipment   模式: DRY-RUN（不落库）
+========================================================================
+目标       : carrier=YUNExpress  process_date=2026-01-15
+
+数据源文件 : _TEST_guard_rules.json
+记录数     : 5
+
+库中当前   : 65 条
+
+--- 回写计划 ---
+  数据源记录        : 5
+  API 查询失败跳过  : 1
+  库中不存在跳过    : 1
+  需更新记录数      : 2
+  已一致无需更新    : 1
+  ├─ dest_tracking 待写入   : 1 个字段
+  └─ shipment_status 待写入 : 1 个字段
+
+--- 待写入明细 (2) ---
+  YT2601500703227452
+      dest_tracking: GFUS01030070815808 -> FAKE_DEST_999
+  YT2601500701843607
+      shipment_status: shipped -> cancelled  [API C 订单取消 -> 订单取消]
+
+--- 跳过/告警明细 (5) ---
+  YT2601500702058064
+      API 查询失败(02039301 订单不存在)
+  YT2601500705918496
+      shipment_status 跳过: API 码 "N" 无业务映射(订单未找到)
+      dest_tracking 跳过: API 未返回尾程跟踪号
+  YT2601500703227452
+      shipment_status 跳过: API 码 "X" 无业务映射(未收录)
+  YT2601500701843607
+      dest_tracking 跳过: API 未返回尾程跟踪号
+  YT_FAKE_NOT_IN_DB
+      库中无此 tracking_no
+
+DRY-RUN 结束，未对数据库做任何修改。确认无误后加 --write 执行。
+耗时: 1.1 秒
