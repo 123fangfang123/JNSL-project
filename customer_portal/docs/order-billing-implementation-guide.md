@@ -172,7 +172,7 @@ LIMIT 3;
 ```typescript
 // lib/types.ts
 
-export type OrderStatus = 'received' | 'processed' | 'shipped' | 'cancelled'
+export type OrderStatus = 'received' | 'processed' | 'shipped' | 'cancelled' | 'returned'
 export type ShipmentStatus = 'created' | 'shipped' | 'cancelled'
 export type Carrier = 'YUNExpress' | 'YANWEN' | 'HH EXPRESS' | 'XJ LOGISTICS'
 export type AbnormalCode =

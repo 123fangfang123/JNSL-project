@@ -148,6 +148,7 @@
 | 待处理 | received |
 | 待审核 | processed |
 | 已作废 | cancelled |
+| 已退货 | returned |
 
 **异常代码映射**:
 | 中文值 | 英文值 |
@@ -458,7 +459,7 @@ const CARRIER_ZH_TO_EN = {
 ```
 
 #### 2. 枚举值映射
-- **order_status**: 配货中→processed, 已发货→shipped, 待处理→received, 已作废→cancelled
+- **order_status**: 配货中→processed, 已发货→shipped, 待处理→received, 已作废→cancelled, 已退货→returned
 - **abnormal_code**: 发错→wrong_item, 丢包→package_lost, 破损→damaged 等
 
 #### 3. 业务规则常量

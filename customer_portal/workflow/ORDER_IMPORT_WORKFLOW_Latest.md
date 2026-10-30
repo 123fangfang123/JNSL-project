@@ -1,8 +1,8 @@
 ﻿# MA 订单导入工作流文档
 
-**版本**: v5.5  
+**版本**: v5.6  
 **创建日期**: 2026-10-14  
-**最后更新**: 2026-10-24  
+**最后更新**: 2026-10-30  
 **状态**: ✅ 当前使用  
 **适用数据库架构**: orders + order_pricing 拆分后，carrier 字段已改为 TEXT 类型
 
@@ -152,6 +152,7 @@
 | 待处理 | received |
 | 待审核 | processed |
 | 已作废 | cancelled |
+| 已退货 | returned |
 
 **异常代码映射**:
 | 中文值 | 英文值 |
@@ -260,6 +261,23 @@ if (sku already exists) {
    应用业务规则: 物流公司识别、物流渠道直写、作废时间回填
    ✅ 数据转换完成
 ```
+
+#### 2.9 退货完成状态联动规则
+
+**场景**: 退货标识列的值为"退货已完成"
+
+**处理逻辑**:
+```javascript
+// 退货完成时，自动将订单状态设为 returned
+if (退货标识 === '退货已完成') {
+  order_status = 'returned';
+}
+```
+
+**说明**:
+- 当"退货标识"列值为 `退货已完成` 时，`order_status` 自动覆盖为 `returned`
+- 当"退货标识"列值为 `是` 时，仅 `is_return` 字段设为 `true`，不改变 `order_status`
+- 此规则优先级高于"订单状态"列的映射值
 
 ---
 
@@ -488,7 +506,7 @@ const CARRIER_ZH_TO_EN = {
 ```
 
 #### 2. 枚举值映射
-- **order_status**: 配货中→processed, 已发货→shipped, 待处理→received, 已作废→cancelled
+- **order_status**: 配货中→processed, 已发货→shipped, 待处理→received, 已作废→cancelled, 已退货→returned
 - **abnormal_code**: 发错→wrong_item, 丢包→package_lost, 破损→damaged 等
 
 #### 3. 业务规则常量
@@ -573,6 +591,11 @@ const CARRIER_ZH_TO_EN = {
 ---
 
 ## 🔄 更新日志
+
+### v5.6 (2026-10-30)
+- ✅ 新增退货完成状态联动规则：当"退货标识"列值为 `退货已完成` 时，`order_status` 自动覆盖为 `returned`
+- ✅ 新增订单状态枚举值 `returned`（已退货）
+- ✅ CLI 脚本和前端导入接口同步更新
 
 ### v5.5 (2026-10-24)
 - ✅ 新增运单号保护机制：更新已存在订单时，先查询 `order_shipment` 表是否已存在运单号

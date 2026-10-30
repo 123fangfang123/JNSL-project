@@ -124,7 +124,7 @@
 | 字段 | 类型 | 约束 | 说明 |
 |------|------|------|------|
 | **transaction_id** | TEXT | PK | 交易ID（唯一标识） |
-| **order_number** | NUMERIC | | 订单号（一个订单号可对应多个 transaction_id） |
+| **order_number** | TEXT | | 订单编号（一个订单号可对应多个 transaction_id） |
 | **store_name** | TEXT | | 店铺名称（关联 customer_store） |
 | **order_date** | DATE | | 订单日期 |
 | **shipment_date** | DATE | | 交运日期（Shipment Date） |
@@ -181,7 +181,7 @@
 | **tracking_no** | TEXT | PK | 运单号（唯一） |
 | **transaction_id** | TEXT | FK → orders | 关联交易ID |
 | **carrier** | TEXT | | 物流商（英文枚举值，如 YUNExpress、HH EXPRESS） |
-| **dispatch_date** | DATE | | 发货日期 |
+| **process_date** | DATE | | 交运时间（订单处理日期） |
 | **shipment_status** | shipment_status_enum | | 运单状态 |
 | **channel_id** | TEXT | | 渠道ID |
 | **dest_tracking** | TEXT | | 目的国追踪号 |
@@ -329,7 +329,7 @@
 ### 4.1 order_status_enum
 
 ```sql
-'received' | 'processed' | 'shipped' | 'cancelled'
+'received' | 'processed' | 'shipped' | 'cancelled' | 'returned'
 ```
 
 | 值 | 中文 | 说明 |
@@ -338,6 +338,7 @@
 | processed | 配货中 | 订单处理中 |
 | shipped | 已发货 | 已发货 |
 | cancelled | 已取消 | 已作废 |
+| returned | 已退货 | 已退货 |
 
 ### 4.2 shipment_status_enum
 
@@ -781,7 +782,7 @@ UPDATE order_billing SET updated_at = NOW();
 ```typescript
 // lib/types.ts
 
-type OrderStatus = 'received' | 'processed' | 'shipped' | 'cancelled'
+type OrderStatus = 'received' | 'processed' | 'shipped' | 'cancelled' | 'returned'
 type ShipmentStatus = 'created' | 'shipped' | 'cancelled'
 type Carrier = string  // 物流公司英文枚举值，参见 source/lib/carrier-config.ts
 type AbnormalCode =
@@ -790,7 +791,7 @@ type AbnormalCode =
 
 interface Order {
   transaction_id: string
-  order_number: number
+  order_number: string
   store_name: string
   order_date: string
   shipment_date: string | null

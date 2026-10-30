@@ -1,13 +1,11 @@
 'use client'
 
-import { useState, useTransition, useMemo, Fragment } from 'react'
-import { useRouter, usePathname } from 'next/navigation'
+import { useState, useMemo, useEffect, useCallback, useRef, Fragment } from 'react'
 import type { Order } from '@/lib/types'
 import { OrderRow } from './OrderRow'
 
-// Group orders by order_number + store_name (same order number may exist in different stores)
 type OrderGroup = {
-  order_number: number
+  order_number: string
   store_name: string
   orders: Order[]
   totalCount: number
@@ -29,7 +27,6 @@ const HEADER_SORT: Record<string, SortKey | null> = {
   'Reshipment':    'is_abnormal',
 }
 
-// Column widths for better alignment
 const COLUMN_WIDTHS: Record<string, string> = {
   'Transaction #': 'w-36',
   'Order Date':    'w-28',
@@ -45,40 +42,107 @@ const COLUMN_WIDTHS: Record<string, string> = {
 
 const HEADERS = Object.keys(HEADER_SORT)
 
-interface Props {
-  initialOrders: Order[]
-  stores: string[]
-  currentParams: {
-    from?: string
-    to?: string
-    store?: string
-    q?: string
-    status?: string
-    product?: string
-    isAbnormal?: string
-    page?: string
-    pageSize?: string
-  }
+interface Stats {
+  total: number
+  shipped: number
+  processed: number
+  received: number
+  cancelled: number
+  returned: number
+  abnormal: number
 }
 
-export function OrdersTable({ initialOrders, stores, currentParams }: Props) {
-  const router = useRouter()
-  const pathname = usePathname()
-  const [isPending, startTransition] = useTransition()
+interface Props {
+  stores: string[]
+  customerId: string | null
+}
 
-  const [from, setFrom] = useState(currentParams.from ?? '')
-  const [to, setTo] = useState(currentParams.to ?? '')
-  const [store, setStore] = useState(currentParams.store ?? '')
-  const [status, setStatus] = useState(currentParams.status ?? '')
-  const [q, setQ] = useState(currentParams.q ?? '')
-  const [product, setProduct] = useState(currentParams.product ?? '')
-  const [isAbnormal, setIsAbnormal] = useState(currentParams.isAbnormal ?? 'false')
-  const [pageSize, setPageSize] = useState(parseInt(currentParams.pageSize ?? '100'))
-  const [currentPage, setCurrentPage] = useState(parseInt(currentParams.page ?? '1'))
+export function OrdersTable({ stores, customerId }: Props) {
+  const [from, setFrom] = useState('')
+  const [to, setTo] = useState('')
+  const [store, setStore] = useState('')
+  const [status, setStatus] = useState('')
+  const [orderNumber, setOrderNumber] = useState('')
+  const [trackingNo, setTrackingNo] = useState('')
+  const [product, setProduct] = useState('')
+  const [isAbnormal, setIsAbnormal] = useState('false')
+  const [pageSize, setPageSize] = useState(100)
+  const [currentPage, setCurrentPage] = useState(1)
 
   const [sortKey, setSortKey] = useState<SortKey | null>(null)
   const [sortDir, setSortDir] = useState<SortDir>('asc')
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set())
+
+  const fromRef = useRef(from); fromRef.current = from
+  const toRef = useRef(to); toRef.current = to
+  const storeRef = useRef(store); storeRef.current = store
+  const statusRef = useRef(status); statusRef.current = status
+  const orderNumberRef = useRef(orderNumber); orderNumberRef.current = orderNumber
+  const trackingNoRef = useRef(trackingNo); trackingNoRef.current = trackingNo
+  const productRef = useRef(product); productRef.current = product
+  const isAbnormalRef = useRef(isAbnormal); isAbnormalRef.current = isAbnormal
+
+  const [orders, setOrders] = useState<Order[]>([])
+  const [total, setTotal] = useState(0)
+  const [stats, setStats] = useState<Stats>({ total: 0, shipped: 0, processed: 0, received: 0, cancelled: 0, returned: 0, abnormal: 0 })
+  const [loading, setLoading] = useState(true)
+  const [applying, setApplying] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchData = useCallback(async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const params = new URLSearchParams()
+      params.set('page', String(currentPage))
+      params.set('pageSize', String(pageSize))
+      if (fromRef.current) params.set('from', fromRef.current)
+      if (toRef.current) params.set('to', toRef.current)
+      if (storeRef.current) params.set('store', storeRef.current)
+      if (statusRef.current) params.set('status', statusRef.current)
+      if (orderNumberRef.current) params.set('orderNumber', orderNumberRef.current)
+      if (trackingNoRef.current) params.set('trackingNo', trackingNoRef.current)
+      if (productRef.current) params.set('product', productRef.current)
+      if (isAbnormalRef.current) params.set('isAbnormal', isAbnormalRef.current)
+
+      const res = await fetch(`/api/orders?${params.toString()}`)
+      const data = await res.json()
+
+      if (!res.ok) {
+        if (res.status === 401) {
+          setOrders([])
+          setTotal(0)
+          setError(null)
+        } else {
+          setError(data.error ?? 'Failed to load orders')
+        }
+      } else {
+        setOrders(data.orders ?? [])
+        setTotal(data.total ?? 0)
+        setStats(data.stats ?? { total: 0, shipped: 0, processed: 0, received: 0, cancelled: 0, returned: 0, abnormal: 0 })
+      }
+    } catch {
+      setError('Network error loading orders')
+    } finally {
+      setLoading(false)
+    }
+  }, [currentPage, pageSize, customerId])
+
+  useEffect(() => {
+    fetchData()
+  }, [fetchData])
+
+  useEffect(() => {
+    setFrom('')
+    setTo('')
+    setStore('')
+    setStatus('')
+    setOrderNumber('')
+    setTrackingNo('')
+    setProduct('')
+    setIsAbnormal('false')
+    setCurrentPage(1)
+  }, [customerId])
 
   function handleSort(h: string) {
     const key = HEADER_SORT[h]
@@ -91,52 +155,31 @@ export function OrdersTable({ initialOrders, stores, currentParams }: Props) {
     }
   }
 
-  function toggleGroup(orderNumber: number, storeName: string) {
+  function toggleGroup(orderNumber: string, storeName: string) {
     setExpandedGroups(prev => {
       const next = new Set(prev)
       const key = `${orderNumber}-${storeName}`
-      if (next.has(key)) {
-        next.delete(key)
-      } else {
-        next.add(key)
-      }
+      if (next.has(key)) next.delete(key)
+      else next.add(key)
       return next
     })
   }
 
   const sorted = useMemo(() => {
-    if (!sortKey) return initialOrders
-    return [...initialOrders].sort((a, b) => {
+    if (!sortKey) return orders
+    return [...orders].sort((a, b) => {
       const av = (a[sortKey] as string | number) ?? ''
       const bv = (b[sortKey] as string | number) ?? ''
       if (av < bv) return sortDir === 'asc' ? -1 : 1
       if (av > bv) return sortDir === 'asc' ? 1 : -1
       return 0
     })
-  }, [initialOrders, sortKey, sortDir])
-
-  // Filter by product name (requires fetching order_items)
-  const filteredByProduct = useMemo(() => {
-    if (!product) return sorted
-    const lq = product.toLowerCase()
-    // For now, we'll filter on client side - in production, this should be done server-side
-    return sorted.filter(order => {
-      // This is a simplified check - ideally we'd fetch items for each order
-      // For better performance, consider adding product_name to the orders table or using a different approach
-      return true // Placeholder - actual filtering happens in page.tsx
-    })
-  }, [sorted, product])
-
-  // Pagination
-  const totalPages = Math.ceil(filteredByProduct.length / pageSize)
-  const startIndex = (currentPage - 1) * pageSize
-  const endIndex = startIndex + pageSize
-  const paginatedOrders = filteredByProduct.slice(startIndex, endIndex)
+  }, [orders, sortKey, sortDir])
 
   // Group orders by order_number + store_name
   const groupedOrders = useMemo(() => {
     const groups = new Map<string, OrderGroup>()
-    for (const order of paginatedOrders) {
+    for (const order of sorted) {
       const groupKey = `${order.order_number}-${order.store_name}`
       if (!groups.has(groupKey)) {
         groups.set(groupKey, {
@@ -151,20 +194,18 @@ export function OrdersTable({ initialOrders, stores, currentParams }: Props) {
       group.totalCount++
     }
     return Array.from(groups.values())
-  }, [paginatedOrders])
+  }, [sorted])
 
-  function applyFilters() {
-    const params = new URLSearchParams()
-    if (from) params.set('from', from)
-    if (to) params.set('to', to)
-    if (store) params.set('store', store)
-    if (status) params.set('status', status)
-    if (q) params.set('q', q)
-    if (product) params.set('product', product)
-    if (isAbnormal) params.set('isAbnormal', isAbnormal)
-    params.set('pageSize', String(pageSize))
-    setCurrentPage(1) // Reset to first page
-    startTransition(() => router.push(`${pathname}?${params.toString()}`))
+  const totalPages = Math.max(1, Math.ceil(total / pageSize))
+
+  async function applyFilters() {
+    setApplying(true)
+    if (currentPage === 1) {
+      await fetchData()
+    } else {
+      setCurrentPage(1)
+    }
+    setApplying(false)
   }
 
   function exportOrders() {
@@ -173,7 +214,8 @@ export function OrdersTable({ initialOrders, stores, currentParams }: Props) {
     if (to) params.set('to', to)
     if (store) params.set('store', store)
     if (status) params.set('status', status)
-    if (q) params.set('q', q)
+    if (orderNumber) params.set('orderNumber', orderNumber)
+    if (trackingNo) params.set('trackingNo', trackingNo)
     if (product) params.set('product', product)
     if (isAbnormal) params.set('isAbnormal', isAbnormal)
     window.open(`/api/export?${params.toString()}`, '_blank')
@@ -185,7 +227,8 @@ export function OrdersTable({ initialOrders, stores, currentParams }: Props) {
     if (to) params.set('to', to)
     if (store) params.set('store', store)
     if (status) params.set('status', status)
-    if (q) params.set('q', q)
+    if (orderNumber) params.set('orderNumber', orderNumber)
+    if (trackingNo) params.set('trackingNo', trackingNo)
     if (product) params.set('product', product)
     if (isAbnormal) params.set('isAbnormal', isAbnormal)
     window.open(`/api/export-items?${params.toString()}`, '_blank')
@@ -196,12 +239,7 @@ export function OrdersTable({ initialOrders, stores, currentParams }: Props) {
     setCurrentPage(page)
   }
 
-  const shippedCount = initialOrders.filter(o => o.order_status === 'shipped').length
-  const processedCount = initialOrders.filter(o => o.order_status === 'processed').length
-  const cancelledCount = initialOrders.filter(o => o.order_status === 'cancelled').length
-  const receivedCount = initialOrders.filter(o => o.order_status === 'received').length
-  const abnormalCount = initialOrders.filter(o => o.is_abnormal).length
-  const displayedCount = filteredByProduct.length
+  const displayedCount = total
 
   return (
     <div>
@@ -209,31 +247,35 @@ export function OrdersTable({ initialOrders, stores, currentParams }: Props) {
       <div className="grid grid-cols-3 gap-4 mb-4">
         <div className="bg-white rounded-lg border p-4" style={{ backgroundColor: '#ffffff' }}>
           <p className="text-xs text-gray-500 uppercase tracking-wide">Total Orders</p>
-          <p className="text-xl font-bold mt-1 text-gray-900">{initialOrders.length.toLocaleString()}</p>
+          <p className="text-xl font-bold mt-1 text-gray-900">{stats.total.toLocaleString()}</p>
         </div>
         <div className="bg-white rounded-lg border p-4" style={{ backgroundColor: '#ffffff' }}>
           <p className="text-xs text-gray-500 uppercase tracking-wide">Shipped</p>
-          <p className="text-xl font-bold mt-1 text-green-600">{shippedCount.toLocaleString()}</p>
+          <p className="text-xl font-bold mt-1 text-green-600">{stats.shipped.toLocaleString()}</p>
         </div>
         <div className="bg-white rounded-lg border p-4" style={{ backgroundColor: '#ffffff' }}>
           <p className="text-xs text-gray-500 uppercase tracking-wide">Processed</p>
-          <p className="text-xl font-bold mt-1 text-amber-600">{processedCount.toLocaleString()}</p>
+          <p className="text-xl font-bold mt-1 text-amber-600">{stats.processed.toLocaleString()}</p>
         </div>
       </div>
 
       {/* Summary cards - Row 2 */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-4 gap-4 mb-6">
         <div className="bg-white rounded-lg border p-4" style={{ backgroundColor: '#ffffff' }}>
           <p className="text-xs text-gray-500 uppercase tracking-wide">Cancelled</p>
-          <p className="text-xl font-bold mt-1 text-red-600">{cancelledCount.toLocaleString()}</p>
+          <p className="text-xl font-bold mt-1 text-red-600">{stats.cancelled.toLocaleString()}</p>
         </div>
         <div className="bg-white rounded-lg border p-4" style={{ backgroundColor: '#ffffff' }}>
           <p className="text-xs text-gray-500 uppercase tracking-wide">Received</p>
-          <p className="text-xl font-bold mt-1 text-blue-600">{receivedCount.toLocaleString()}</p>
+          <p className="text-xl font-bold mt-1 text-blue-600">{stats.received.toLocaleString()}</p>
+        </div>
+        <div className="bg-white rounded-lg border p-4" style={{ backgroundColor: '#ffffff' }}>
+          <p className="text-xs text-gray-500 uppercase tracking-wide">Returned</p>
+          <p className="text-xl font-bold mt-1 text-purple-600">{stats.returned.toLocaleString()}</p>
         </div>
         <div className="bg-white rounded-lg border p-4" style={{ backgroundColor: '#ffffff' }}>
           <p className="text-xs text-gray-500 uppercase tracking-wide">Reshipment</p>
-          <p className="text-xl font-bold mt-1 text-red-600">{abnormalCount.toLocaleString()}</p>
+          <p className="text-xl font-bold mt-1 text-red-600">{stats.abnormal.toLocaleString()}</p>
         </div>
       </div>
 
@@ -243,6 +285,7 @@ export function OrdersTable({ initialOrders, stores, currentParams }: Props) {
           <p className="text-xs text-gray-500 mb-1">From</p>
           <input
             type="date"
+            lang="en"
             value={from}
             onChange={e => setFrom(e.target.value)}
             className="border rounded px-2 py-1.5 text-sm text-gray-700"
@@ -252,6 +295,7 @@ export function OrdersTable({ initialOrders, stores, currentParams }: Props) {
           <p className="text-xs text-gray-500 mb-1">To</p>
           <input
             type="date"
+            lang="en"
             value={to}
             onChange={e => setTo(e.target.value)}
             className="border rounded px-2 py-1.5 text-sm text-gray-700"
@@ -282,17 +326,29 @@ export function OrdersTable({ initialOrders, stores, currentParams }: Props) {
             <option value="processed">Processed</option>
             <option value="received">Received</option>
             <option value="cancelled">Cancelled</option>
+            <option value="returned">Returned</option>
           </select>
         </div>
         <div>
-          <p className="text-xs text-gray-500 mb-1">Search</p>
+          <p className="text-xs text-gray-500 mb-1">Order #</p>
           <input
             type="text"
-            placeholder="Order # or tracking…"
-            value={q}
-            onChange={e => setQ(e.target.value)}
+            placeholder="Search order #..."
+            value={orderNumber}
+            onChange={e => setOrderNumber(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && applyFilters()}
-            className="border rounded px-2 py-1.5 text-sm text-gray-700 w-44"
+            className="border rounded px-2 py-1.5 text-sm text-gray-700 w-36"
+          />
+        </div>
+        <div>
+          <p className="text-xs text-gray-500 mb-1">Tracking #</p>
+          <input
+            type="text"
+            placeholder="Search tracking #..."
+            value={trackingNo}
+            onChange={e => setTrackingNo(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && applyFilters()}
+            className="border rounded px-2 py-1.5 text-sm text-gray-700 w-40"
           />
         </div>
         <div>
@@ -320,10 +376,10 @@ export function OrdersTable({ initialOrders, stores, currentParams }: Props) {
         </div>
         <button
           onClick={applyFilters}
-          disabled={isPending}
+          disabled={applying}
           className="bg-blue-600 text-white px-4 py-1.5 rounded text-sm hover:bg-blue-700 disabled:opacity-50 transition-colors"
         >
-          {isPending ? 'Loading…' : 'Apply'}
+          {applying ? 'Loading…' : 'Apply'}
         </button>
         <button
           onClick={exportOrders}
@@ -342,7 +398,9 @@ export function OrdersTable({ initialOrders, stores, currentParams }: Props) {
       {/* Results count and pagination controls */}
       <div className="flex justify-between items-center mb-4">
         <p className="text-sm text-gray-600">
-          Showing {paginatedOrders.length} of {displayedCount} orders (Page {currentPage} of {totalPages})
+          {loading
+            ? 'Loading orders...'
+            : `Showing ${orders.length} of ${displayedCount} orders (Page ${currentPage} of ${totalPages})`}
         </p>
         <div className="flex items-center gap-2">
           <label className="text-sm text-gray-600">Per page:</label>
@@ -362,14 +420,14 @@ export function OrdersTable({ initialOrders, stores, currentParams }: Props) {
           <div className="flex gap-1">
             <button
               onClick={() => goToPage(currentPage - 1)}
-              disabled={currentPage <= 1}
+              disabled={currentPage <= 1 || loading}
               className="px-3 py-1 border rounded text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Previous
             </button>
             <button
               onClick={() => goToPage(currentPage + 1)}
-              disabled={currentPage >= totalPages}
+              disabled={currentPage >= totalPages || loading}
               className="px-3 py-1 border rounded text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Next
@@ -379,11 +437,16 @@ export function OrdersTable({ initialOrders, stores, currentParams }: Props) {
       </div>
 
       {/* Table */}
-      {sorted.length === 0 ? (
+      {error && (
+        <div className="text-center py-16 text-red-500 bg-red-50 rounded-lg border border-red-200">
+          {error}
+        </div>
+      )}
+      {!error && sorted.length === 0 && !loading ? (
         <div className="text-center py-16 text-gray-400 bg-white rounded-lg border">
           No orders found for the selected period.
         </div>
-      ) : (
+      ) : !error && (
         <div className="bg-white rounded-lg border overflow-x-auto">
           <table className="w-full text-sm min-w-max">
             <thead>
@@ -419,16 +482,13 @@ export function OrdersTable({ initialOrders, stores, currentParams }: Props) {
                 const groupKey = `${group.order_number}-${group.store_name}`
                 const isExpanded = expandedGroups.has(groupKey)
                 const hasMultiple = group.orders.length > 1
-                
+
                 if (!hasMultiple) {
-                  // Single transaction for this order number - render normally
                   return <OrderRow key={`order-${groupKey}`} order={group.orders[0]} />
                 }
-                
-                // Multiple transactions for same order number - render grouped
+
                 return (
                   <Fragment key={`group-${groupKey}`}>
-                    {/* Group header row */}
                     <tr
                       onClick={() => toggleGroup(group.order_number, group.store_name)}
                       className={`border-b cursor-pointer hover:bg-gray-50 transition-colors ${
@@ -447,8 +507,8 @@ export function OrdersTable({ initialOrders, stores, currentParams }: Props) {
                       <td className="p-3 text-sm">
                         <span className="text-xs text-gray-500">{group.totalCount} transactions</span>
                       </td>
-                      <td className="p-3 font-mono text-xs text-gray-600">
-                        {group.orders[0].store_name}
+                      <td className="p-3 text-sm">
+                        <span className="text-xs text-gray-500">{group.orders[0].store_name}</span>
                       </td>
                       <td className="p-3 text-sm">{group.orders[0].country ?? '—'}</td>
                       <td className="p-3 font-mono text-xs">{group.orders[0].tracking_no ?? '—'}</td>
@@ -469,8 +529,7 @@ export function OrdersTable({ initialOrders, stores, currentParams }: Props) {
                         )}
                       </td>
                     </tr>
-                    
-                    {/* Expanded child orders */}
+
                     {isExpanded && group.orders.map((order, idx) => (
                       <OrderRow key={`${order.transaction_id}-${idx}`} order={order} isChild />
                     ))}

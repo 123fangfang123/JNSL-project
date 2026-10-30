@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import type { Order, OrderItem } from '@/lib/types'
+import type { Order, OrderPricing, OrderItem } from '@/lib/types'
 import { createClient } from '@/lib/supabase/client'
 
 const STATUS_COLORS: Record<string, { background: string; color: string; border: string }> = {
@@ -9,6 +9,7 @@ const STATUS_COLORS: Record<string, { background: string; color: string; border:
   processed: { background: '#fef3c7', color: '#b45309', border: '1px solid #fcd34d' },
   received:  { background: '#e0f2fe', color: '#0369a1', border: '1px solid #7dd3fc' },
   cancelled: { background: '#fee2e2', color: '#b91c1c', border: '1px solid #fca5a5' },
+  returned:  { background: '#f3e8ff', color: '#7e22ce', border: '1px solid #d8b4fe' },
 }
 
 function fmt(n: number | null | undefined) {
@@ -20,7 +21,7 @@ function fmtDate(s: string | null) {
   return s.slice(0, 10)
 }
 
-export function AbnormalOrderRow({ order }: { order: Order }) {
+export function AbnormalOrderRow({ order }: { order: Order & OrderPricing }) {
   const [expanded, setExpanded] = useState(false)
   const [items, setItems] = useState<OrderItem[] | null>(null)
   const [loadingItems, setLoadingItems] = useState(false)

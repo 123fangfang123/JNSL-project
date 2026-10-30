@@ -7,7 +7,7 @@
 // Excel 列名 → 数据库字段映射
 const COLUMN_MAP = {
   '订单编号': 'transaction_id',      // 主键，唯一标识
-  '交易编号': 'order_number',        // 订单号（整数）
+  '交易编号': 'order_number',        // 订单号
   '店铺名': 'store_name',            // 店铺名称
   '付款时间': 'order_date',          // 订单日期（Excel 日期格式）
   '交运时间': 'process_date',        // 交运时间（订单处理日期）
@@ -27,11 +27,13 @@ const ORDER_STATUS_MAP = {
   '待处理': 'received',
   '待审核': 'processed',
   '已作废': 'cancelled',
+  '已退货': 'returned',
   // 直接透传英文值
   'received': 'received',
   'processed': 'processed',
   'shipped': 'shipped',
   'cancelled': 'cancelled',
+  'returned': 'returned',
 }
 
 // 异常代码映射（重发原因 → AbnormalCode 枚举）
@@ -72,10 +74,10 @@ const FIELD_TRANSFORMS = {
   // transaction_id: 保持字符串
   transaction_id: (val) => String(val).trim(),
   
-  // order_number: 转为整数
+  // order_number: 保持字符串
   order_number: (val) => {
-    const num = parseInt(String(val), 10)
-    return isNaN(num) ? null : num
+    if (val == null || val === '') return null
+    return String(val).trim()
   },
   
   // order_date: Excel 日期序列号 → YYYY-MM-DD

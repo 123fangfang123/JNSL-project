@@ -42,7 +42,7 @@ module.exports = {
   COLUMN_MAP: {
     // orders 表字段
     '订单编号': 'transaction_id',           // 主键
-    '交易编号': 'order_number',             // 订单号（整数）
+    '交易编号': 'order_number',             // 订单号
     '店铺名': 'store_name',                 // 店铺名称
     '付款时间': 'order_date',               // 订单日期
     '发货时间': 'dispatch_date',            // 发货时间
@@ -74,11 +74,13 @@ module.exports = {
       '待处理': 'received',
       '待审核': 'processed',
       '已作废': 'cancelled',
+      '已退货': 'returned',
       // 直接透传英文值
       'received': 'received',
       'processed': 'processed',
       'shipped': 'shipped',
-      'cancelled': 'cancelled'
+      'cancelled': 'cancelled',
+      'returned': 'returned'
     },
     
     // 物流公司映射（Excel → carrier_enum）
@@ -117,10 +119,10 @@ module.exports = {
     // transaction_id: 保持字符串
     transaction_id: (val) => String(val).trim(),
     
-    // order_number: 转为整数
+    // order_number: 保持字符串
     order_number: (val) => {
-      const num = parseInt(String(val), 10);
-      return isNaN(num) ? null : num;
+      if (val == null || val === '') return null;
+      return String(val).trim();
     },
     
     // order_date: Excel 日期序列号 → YYYY-MM-DD HH:mm:ss

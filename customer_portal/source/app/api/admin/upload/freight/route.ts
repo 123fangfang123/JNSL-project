@@ -18,8 +18,8 @@ export async function POST(req: NextRequest) {
     const supabase = createServiceClient()
 
     const carrierDbName = CARRIER_DB_NAME[carrier] ?? carrier
-    const weightUnit = FREIGHT_BILL_CONFIG.WEIGHT_UNIT[carrierDbName] ?? 'g'
-    const otherFeeFormula = FREIGHT_BILL_CONFIG.OTHER_FEE_FORMULA[carrierDbName]
+    const weightUnit = (FREIGHT_BILL_CONFIG.WEIGHT_UNIT as Record<string, string>)[carrierDbName] ?? 'g'
+    const otherFeeFormula = (FREIGHT_BILL_CONFIG.OTHER_FEE_FORMULA as Record<string, string | null>)[carrierDbName]
 
     // Transform raw mapped rows into freight table rows
     const freightRows: Record<string, unknown>[] = []

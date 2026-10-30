@@ -1,4 +1,4 @@
-export type OrderStatus = 'received' | 'processed' | 'shipped' | 'cancelled'
+export type OrderStatus = 'received' | 'processed' | 'shipped' | 'cancelled' | 'returned'
 export type ShipmentStatus = 'created' | 'shipped' | 'cancelled'
 export type Carrier = 'YUNExpress' | 'YANWEN' | 'HH EXPRESS' | 'XJ LOGISTICS'
 export type AbnormalCode =
@@ -7,7 +7,7 @@ export type AbnormalCode =
 
 export interface Order {
   transaction_id: string
-  order_number: number
+  order_number: string
   store_name: string
   order_date: string
   dispatch_date: string | null

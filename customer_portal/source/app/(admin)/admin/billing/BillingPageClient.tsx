@@ -24,7 +24,7 @@ interface Props {
 
 type Step = 'select' | 'preview' | 'confirm' | 'done' | 'error'
 
-const ORDER_STATUSES = ['shipped', 'processed', 'received', 'cancelled']
+const ORDER_STATUSES = ['shipped', 'processed', 'received', 'cancelled', 'returned']
 
 export function BillingPageClient({ unbilledOrders, stores }: Props) {
   const router = useRouter()

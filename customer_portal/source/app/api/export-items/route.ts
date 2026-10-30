@@ -8,7 +8,9 @@ export async function GET(request: NextRequest) {
   const to = searchParams.get('to')
   const store = searchParams.get('store')
   const status = searchParams.get('status')
-  const q = searchParams.get('q')
+  const orderNumber = searchParams.get('orderNumber')
+  const trackingNo = searchParams.get('trackingNo')
+  const product = searchParams.get('product')
   const isAbnormal = searchParams.get('isAbnormal')
 
   const { supabase, customerId, isAdmin } = await getPortalContext()
@@ -55,7 +57,57 @@ export async function GET(request: NextRequest) {
   if (to) query = query.lte('order_date', to + 'T23:59:59')
   if (store) query = query.eq('store_name', store)
   if (status) query = query.eq('order_status', status)
-  if (q && /^\d+$/.test(q) && q.length <= 10) query = query.eq('order_number', parseInt(q))
+  if (orderNumber) query = query.ilike('order_number', `%${orderNumber}%`)
+
+  // Handle tracking number filter - query order_shipment first
+  if (trackingNo) {
+    const { data: matchingShipments } = await supabase
+      .from('order_shipment')
+      .select('transaction_id')
+      .ilike('tracking_no', `%${trackingNo}%`)
+      .limit(1000)
+
+    if (!matchingShipments || matchingShipments.length === 0) {
+      const ws = XLSX.utils.json_to_sheet([])
+      const wb = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(wb, ws, 'Order Items')
+      const buf = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' })
+      const date = new Date().toISOString().slice(0, 10)
+      return new NextResponse(buf, {
+        headers: {
+          'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          'Content-Disposition': `attachment; filename="order_items_${date}.xlsx"`,
+        },
+      })
+    }
+    const trackingFilterIds = [...new Set(matchingShipments.map(s => s.transaction_id))]
+    query = query.in('transaction_id', trackingFilterIds)
+  }
+
+  // Handle product filter - query order_items first
+  if (product) {
+    const { data: matchingItems } = await supabase
+      .from('order_items')
+      .select('transaction_id')
+      .ilike('product_name', `%${product}%`)
+      .limit(1000)
+
+    if (!matchingItems || matchingItems.length === 0) {
+      const ws = XLSX.utils.json_to_sheet([])
+      const wb = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(wb, ws, 'Order Items')
+      const buf = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' })
+      const date = new Date().toISOString().slice(0, 10)
+      return new NextResponse(buf, {
+        headers: {
+          'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          'Content-Disposition': `attachment; filename="order_items_${date}.xlsx"`,
+        },
+      })
+    }
+    const productFilterIds = [...new Set(matchingItems.map(i => i.transaction_id))]
+    query = query.in('transaction_id', productFilterIds)
+  }
 
   // Fetch orders in batches (Supabase server max_rows = 1000)
   const batchSize = 1000
@@ -118,16 +170,6 @@ export async function GET(request: NextRequest) {
         'Item ID': item.item_id ?? '',
       }
     })
-
-    // Filter by text search (product name or transaction id)
-    if (q && !/^\d+$/.test(q)) {
-      const lq = q.toLowerCase()
-      const filtered = rows.filter(r =>
-        String(r['Product Name']).toLowerCase().includes(lq) ||
-        String(r['Transaction #']).toLowerCase().includes(lq)
-      )
-      rows.splice(0, rows.length, ...filtered)
-    }
 
     const ws = XLSX.utils.json_to_sheet(rows)
     const wb = XLSX.utils.book_new()

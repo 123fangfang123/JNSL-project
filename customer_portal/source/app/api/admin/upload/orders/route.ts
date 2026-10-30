@@ -20,11 +20,15 @@ const ITEM_FIELDS = [
 function toDateStr(val: unknown): string | null {
   if (val == null) return null
   if (typeof val === 'number') {
+    if (val <= 0) return null
     const ms = Math.round((val - 25569) * 86400 * 1000)
     return new Date(ms).toISOString().slice(0, 10)
   }
   const s = String(val).trim()
-  return s ? s.slice(0, 10).replace(/\//g, '-') : null
+  if (!s) return null
+  const result = s.slice(0, 10).replace(/\//g, '-')
+  if (/^0{4}-0{2}-0{2}$/.test(result)) return null
+  return result
 }
 
 // Chinese order_status -> order_status_enum
@@ -34,10 +38,12 @@ const ORDER_STATUS_MAP: Record<string, string> = {
   '待处理': 'received',
   '待审核': 'processed',
   '已作废': 'cancelled',
+  '已退货': 'returned',
   'received': 'received',
   'processed': 'processed',
   'shipped': 'shipped',
   'cancelled': 'cancelled',
+  'returned': 'returned',
 }
 
 function toOrderStatus(val: unknown): string | null {
@@ -77,6 +83,7 @@ export async function POST(req: NextRequest) {
     const itemRows: Record<string, unknown>[] = []
     // tid -> shipment row
     const shipmentByTid = new Map<string, Record<string, unknown>>()
+    const RETURN_TRUE_VALUES = new Set(['是', '退货已完成'])
 
     for (const row of rows) {
       const tid = String(row.transaction_id ?? '')
@@ -96,7 +103,8 @@ export async function POST(req: NextRequest) {
           carrierWarnings.push(`物流公司未识别: ${String(carrierRaw)} (订单: ${tid})`)
         }
         if (orderRow.order_number != null) {
-          orderRow.order_number = parseInt(String(orderRow.order_number), 10) || null
+          const s = String(orderRow.order_number).trim()
+          orderRow.order_number = s || null
         }
         // Cancel date fallback: cancel_date || return_sign_date
         const cancelDate = toDateStr(orderRow.cancel_date)
@@ -109,7 +117,12 @@ export async function POST(req: NextRequest) {
         const abnormalCode = abnormalOverrides?.[tid] ?? mapAbnormalCode(reasonRaw)
         orderRow.is_abnormal = isAbnormal
           // Convert is_return from Chinese text to boolean
-          orderRow.is_return = String(orderRow.is_return ?? '').trim() === '是'
+          const isReturnRaw = String(orderRow.is_return ?? '').trim()
+          orderRow.is_return = RETURN_TRUE_VALUES.has(isReturnRaw)
+          // When return is completed, override order_status to 'returned'
+          if (isReturnRaw === '退货已完成') {
+            orderRow.order_status = 'returned'
+          }
         orderRow.abnormal_code = isAbnormal ? (abnormalCode || null) : null
         orderMap.set(tid, orderRow)
 
@@ -200,30 +213,32 @@ export async function POST(req: NextRequest) {
       if (itemsErr) return NextResponse.json({ error: itemsErr.message }, { status: 500 })
     }
 
-    // 4. Update order_shipment: check which orders already have shipments
-    // Only insert shipments for orders that don't have existing shipment records
-    const tidsForShipment = orderRows.map(r => r.transaction_id as string)
+    // 4. Update order_shipment: check by tracking_no (the actual PK)
+    // Skip shipments whose tracking_no already exists in DB
     let skippedShipments = 0
     let shipmentsToInsert = shipmentRows
-    
-    if (tidsForShipment.length > 0) {
-      // Query which orders already have shipment records
-      const { data: existingShipments } = await supabase
-        .from('order_shipment')
-        .select('transaction_id')
-        .in('transaction_id', tidsForShipment)
-      
-      const existingShipmentTids = new Set((existingShipments ?? []).map(r => r.transaction_id))
-      
-      // Filter out shipments for orders that already have shipment records
-      if (existingShipmentTids.size > 0) {
+
+    if (shipmentRows.length > 0) {
+      const trackingNos = shipmentRows.map(s => s.tracking_no as string)
+      const existingTrackingNos = new Set<string>()
+      const batchSize = 500
+      for (let i = 0; i < trackingNos.length; i += batchSize) {
+        const batch = trackingNos.slice(i, i + batchSize)
+        const { data } = await supabase
+          .from('order_shipment')
+          .select('tracking_no')
+          .in('tracking_no', batch)
+        for (const r of data ?? []) existingTrackingNos.add(r.tracking_no)
+      }
+
+      if (existingTrackingNos.size > 0) {
         shipmentsToInsert = shipmentRows.filter(
-          s => !existingShipmentTids.has(s.transaction_id as string)
+          s => !existingTrackingNos.has(s.tracking_no as string)
         )
-        skippedShipments = existingShipmentTids.size
+        skippedShipments = existingTrackingNos.size
       }
     }
-    
+
     if (shipmentsToInsert.length > 0) {
       const { error: shipErr } = await supabase
         .from('order_shipment')

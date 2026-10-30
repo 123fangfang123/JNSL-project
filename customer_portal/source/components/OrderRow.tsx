@@ -9,6 +9,7 @@ const STATUS_COLORS: Record<string, { background: string; color: string; border:
   processed: { background: '#fef3c7', color: '#b45309', border: '1px solid #fcd34d' },
   received:  { background: '#e0f2fe', color: '#0369a1', border: '1px solid #7dd3fc' },
   cancelled: { background: '#fee2e2', color: '#b91c1c', border: '1px solid #fca5a5' },
+  returned:  { background: '#f3e8ff', color: '#7e22ce', border: '1px solid #d8b4fe' },
 }
 
 function fmt(n: number | null | undefined) {
