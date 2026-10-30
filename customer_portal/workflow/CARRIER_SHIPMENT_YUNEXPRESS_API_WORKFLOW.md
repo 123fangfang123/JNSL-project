@@ -423,10 +423,10 @@ Object.keys(patch).forEach(f => {
 | `T` | In transit | 运输中 | 运输中 | `shipped` | 已交运，在途 |
 | `D` | Successful delivery | 投递成功 | 已签收 | `shipped` | 已妥投（终态） |
 | `E` | May be abnormal | 可能异常 | 异常 | `shipped` | 需人工关注的异常件 |
-| `R` | Package returned | 包裹退回 | 已退件 | `shipped` | 退件/弃件（终态）✅ |
+| `R` | Package returned | 包裹退回 | 已退件 | `returned` | 退件签收（终态）✅ |
 | `C` | Order Cancellation | 订单取消 | 已取消 | `cancelled` | 取消（终态） |
 
-> **R 状态码说明**：云途 API 的 `package_status = 'R'` 涵盖"退回"和"弃件"两种场景，统一映射为 `shipped`（物流流程已终结）。
+> **R 状态码说明**：云途 API 的 `package_status = 'R'` 涵盖"退回"和"弃件"两种场景，统一映射为 `returned`（退件签收完成，进入退货核查流程）。
 >
 > 配置位置：`carrier-shipment-config.ts` 的 `API_STATUS_MAP['YUNExpress']` 与 `API_STATUS_DESC['YUNExpress']`。
 >

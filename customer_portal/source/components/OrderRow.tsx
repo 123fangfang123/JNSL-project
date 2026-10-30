@@ -21,7 +21,7 @@ function fmtDate(s: string | null) {
   return s.slice(0, 16).replace('T', ' ')
 }
 
-export function OrderRow({ order, isChild = false }: { order: Order; isChild?: boolean }) {
+export function OrderRow({ order, isChild = false, isAdmin = false }: { order: Order; isChild?: boolean; isAdmin?: boolean }) {
   const [expanded, setExpanded] = useState(false)
   const [items, setItems] = useState<OrderItem[] | null>(null)
   const [loadingItems, setLoadingItems] = useState(false)
@@ -142,7 +142,11 @@ export function OrderRow({ order, isChild = false }: { order: Order; isChild?: b
                       <span className="text-lg">🚚</span>
                       Shipment Info
                     </p>
-                    <dl className={`grid ${order.abnormal_code ? 'grid-cols-5' : 'grid-cols-4'} gap-x-8 gap-y-4 text-sm`}>
+                    <dl className={`grid gap-x-8 gap-y-4 text-sm ${
+                      isAdmin && order.abnormal_code ? 'grid-cols-5'
+                      : isAdmin || order.abnormal_code ? 'grid-cols-4'
+                      : 'grid-cols-3'
+                    }`}>
                       <div className="bg-white p-3 rounded border border-blue-200">
                         <dt className="font-bold text-blue-800 mb-1 text-xs uppercase">Carrier</dt>
                         <dd className="text-gray-800 font-medium">{order.carrier ?? '—'}</dd>
@@ -155,10 +159,12 @@ export function OrderRow({ order, isChild = false }: { order: Order; isChild?: b
                         <dt className="font-bold text-blue-800 mb-1 text-xs uppercase">Dest Tracking</dt>
                         <dd className="text-gray-800 font-mono">{order.dest_tracking ?? '—'}</dd>
                       </div>
+                      {isAdmin && (
                       <div className="bg-white p-3 rounded border border-blue-200">
                         <dt className="font-bold text-blue-800 mb-1 text-xs uppercase">Shipment Status</dt>
                         <dd className="text-gray-800 font-medium">{order.shipment_status ?? '—'}</dd>
                       </div>
+                      )}
                       {order.abnormal_code && (
                         <div className="bg-white p-3 rounded border border-blue-200">
                           <dt className="font-bold text-blue-800 mb-1 text-xs uppercase">Reshipment Reason</dt>

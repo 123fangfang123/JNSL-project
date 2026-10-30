@@ -30,3 +30,6 @@ customer_portal/.qoder/
 
 # API KEY files
 customer_portal/*API KEY*
+
+# Local data import files (CSV, logs, JSON)
+customer_portal/Data Import/

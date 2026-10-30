@@ -172,7 +172,8 @@ ORDER BY process_date DESC
 | OR35 | 发货截留成功 | `cancelled` | 已截留 |
 | PU10 | 燕文已揽收 | `shipped` | 已揽收 |
 | PU30 | 揽收失败 | `cancelled` | 异常 |
-| SC* | 仓库处理阶段 | `shipped` | 运输中 |
+| SC*（SC38 除外） | 仓库处理阶段 | `shipped` | 运输中 |
+| SC38 | 退件签收 | `returned` | 退件已签收 |
 | S2xx, S3xx | 运输阶段 | `shipped` | 运输中 |
 | EC*, IC* | 清关阶段 | `shipped` | 运输中 |
 | LH* | 干线运输阶段 | `shipped` | 运输中 |
@@ -181,7 +182,8 @@ ORDER BY process_date DESC
 | LM50 | 派送失败 | `shipped` | 异常 |
 | LM54-LM90 | 异常状态 | `shipped` | 异常 |
 
-> 📌 映射规则参考 `carrier-shipment-config.ts` 中的 `SHIPMENT_STATUS_MAP['YANWEN']`
+> 📌 映射规则参考 `source/lib/admin/carrier-configs/carrier-shipment-config.ts` 中的 `API_STATUS_MAP['YANWEN']`（API 码 → 中文状态名）+ `SHIPMENT_STATUS_MAP['YANWEN']`（中文状态名 → DB 枚举）。
+> 定时任务脚本 `tools/_yanwen_query_batch.js` 已统一调用该共享配置，不再维护本地私有映射表。
 
 ### **步骤 4: 回写数据库**
 
@@ -303,7 +305,8 @@ API查询: 获取最新状态和尾程跟踪号
 |--------|---------|---------|---------|
 | SC00-SC20 | Facility Processing | 仓库处理 | `shipped` |
 | SC21 | Exception | 异常件录入 | `shipped` |
-| SC34-SC38 | Return Processing | 退件处理 | `shipped` |
+| SC34-SC37 | Return Processing | 退件处理 | `shipped` |
+| SC38 | Return Signed | 退件签收 | `returned` |
 | SC40-SC45 | Carrier Info | 目的国承运商信息 | `shipped` |
 
 ### **运输阶段 (S2xx, S3xx)**

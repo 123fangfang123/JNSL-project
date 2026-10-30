@@ -2,7 +2,7 @@ import { getPortalContext } from '@/lib/supabase/portal-context'
 import { OrdersTable } from '@/components/OrdersTable'
 
 export default async function OrdersPage() {
-  const { supabase, customerId } = await getPortalContext()
+  const { supabase, customerId, isAdmin } = await getPortalContext()
 
   let storeQuery = supabase.from('customer_store').select('store_name').order('store_name')
   if (customerId) storeQuery = storeQuery.eq('customer_id', customerId)
@@ -12,7 +12,7 @@ export default async function OrdersPage() {
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold text-gray-900 mb-6">Order Tracking</h1>
-      <OrdersTable stores={stores} customerId={customerId} />
+      <OrdersTable stores={stores} customerId={customerId} isAdmin={isAdmin} />
     </div>
   )
 }

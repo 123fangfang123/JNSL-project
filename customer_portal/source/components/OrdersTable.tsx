@@ -55,9 +55,10 @@ interface Stats {
 interface Props {
   stores: string[]
   customerId: string | null
+  isAdmin?: boolean
 }
 
-export function OrdersTable({ stores, customerId }: Props) {
+export function OrdersTable({ stores, customerId, isAdmin = false }: Props) {
   const [from, setFrom] = useState('')
   const [to, setTo] = useState('')
   const [store, setStore] = useState('')
@@ -260,7 +261,7 @@ export function OrdersTable({ stores, customerId }: Props) {
       </div>
 
       {/* Summary cards - Row 2 */}
-      <div className="grid grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-3 gap-4 mb-6">
         <div className="bg-white rounded-lg border p-4" style={{ backgroundColor: '#ffffff' }}>
           <p className="text-xs text-gray-500 uppercase tracking-wide">Cancelled</p>
           <p className="text-xl font-bold mt-1 text-red-600">{stats.cancelled.toLocaleString()}</p>
@@ -268,10 +269,6 @@ export function OrdersTable({ stores, customerId }: Props) {
         <div className="bg-white rounded-lg border p-4" style={{ backgroundColor: '#ffffff' }}>
           <p className="text-xs text-gray-500 uppercase tracking-wide">Received</p>
           <p className="text-xl font-bold mt-1 text-blue-600">{stats.received.toLocaleString()}</p>
-        </div>
-        <div className="bg-white rounded-lg border p-4" style={{ backgroundColor: '#ffffff' }}>
-          <p className="text-xs text-gray-500 uppercase tracking-wide">Returned</p>
-          <p className="text-xl font-bold mt-1 text-purple-600">{stats.returned.toLocaleString()}</p>
         </div>
         <div className="bg-white rounded-lg border p-4" style={{ backgroundColor: '#ffffff' }}>
           <p className="text-xs text-gray-500 uppercase tracking-wide">Reshipment</p>
@@ -484,7 +481,7 @@ export function OrdersTable({ stores, customerId }: Props) {
                 const hasMultiple = group.orders.length > 1
 
                 if (!hasMultiple) {
-                  return <OrderRow key={`order-${groupKey}`} order={group.orders[0]} />
+                  return <OrderRow key={`order-${groupKey}`} order={group.orders[0]} isAdmin={isAdmin} />
                 }
 
                 return (
@@ -531,7 +528,7 @@ export function OrdersTable({ stores, customerId }: Props) {
                     </tr>
 
                     {isExpanded && group.orders.map((order, idx) => (
-                      <OrderRow key={`${order.transaction_id}-${idx}`} order={order} isChild />
+                      <OrderRow key={`${order.transaction_id}-${idx}`} order={order} isChild isAdmin={isAdmin} />
                     ))}
                   </Fragment>
                 )

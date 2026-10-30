@@ -1,5 +1,6 @@
 ﻿'use client'
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import * as XLSX from 'xlsx'
 import { applyColumnMap, detectMappedColumns } from '@/lib/admin/apply-column-map'
 import { ordersColumnMap } from '@/lib/admin/column-maps/orders'
@@ -11,6 +12,7 @@ import { NavigationGuard } from '@/components/admin/NavigationGuard'
 type Step = 'idle' | 'mapping' | 'abnormal_review' | 'uploading' | 'done' | 'error'
 
 export default function UploadOrdersPage() {
+  const router = useRouter()
   const [step, setStep] = useState<Step>('idle')
   const [rawRows, setRawRows] = useState<Record<string, unknown>[]>([])
   const [mappedRows, setMappedRows] = useState<Record<string, unknown>[]>([])
@@ -20,6 +22,10 @@ export default function UploadOrdersPage() {
   const [abnormalRows, setAbnormalRows] = useState<AbnormalRowData[]>([])
   const [result, setResult] = useState<{ inserted: number; updated: number; itemsCount: number; shipmentsCount: number; skippedShipments: number; pricingCount: number; carrierWarnings: string[] } | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [checkingCancellable, setCheckingCancellable] = useState(false)
+  const [checkingReturned, setCheckingReturned] = useState(false)
+  const [cancellableError, setCancellableError] = useState<string | null>(null)
+  const [returnedError, setReturnedError] = useState<string | null>(null)
 
   // Prevent navigation during upload
   useEffect(() => {
@@ -207,6 +213,52 @@ export default function UploadOrdersPage() {
     setAbnormalRows([]); setResult(null); setError(null)
   }
 
+  async function checkCancellableOrders() {
+    setCheckingCancellable(true)
+    setCancellableError(null)
+    try {
+      const res = await fetch('/api/admin/check-cancellable-orders?page=1&pageSize=1')
+      const json = await res.json()
+      if (!res.ok) {
+        setCancellableError(json.error || '检测失败')
+      } else {
+        const total = json.total || 0
+        if (total === 0) {
+          setCancellableError('没有符合条件的订单')
+        } else {
+          router.push('/admin/check-cancellable-orders')
+        }
+      }
+    } catch (err) {
+      setCancellableError(String(err))
+    } finally {
+      setCheckingCancellable(false)
+    }
+  }
+
+  async function checkReturnedOrders() {
+    setCheckingReturned(true)
+    setReturnedError(null)
+    try {
+      const res = await fetch('/api/admin/check-returned-orders?page=1&pageSize=1')
+      const json = await res.json()
+      if (!res.ok) {
+        setReturnedError(json.error || '检测失败')
+      } else {
+        const total = json.total || 0
+        if (total === 0) {
+          setReturnedError('没有符合条件的订单')
+        } else {
+          router.push('/admin/check-returned-orders')
+        }
+      }
+    } catch (err) {
+      setReturnedError(String(err))
+    } finally {
+      setCheckingReturned(false)
+    }
+  }
+
   return (
     <>
     <NavigationGuard active={step === 'uploading'} />
@@ -223,6 +275,51 @@ export default function UploadOrdersPage() {
           {error && <p className="mt-4 text-sm text-red-600 bg-red-50 p-3 rounded">{error}</p>}
         </div>
       )}
+
+      {/* 检测订单区域 */}
+      <div className="mt-8">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">检测订单</h1>
+        
+        {/* 检测是否可作废的订单 */}
+        <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 mb-6 min-h-[120px]">
+          <div className="mb-4">
+            <span className="text-lg font-semibold text-gray-700">检测是否可作废的订单</span>
+          </div>
+          <div className="mt-4 text-center">
+            <span className="text-sm text-gray-500">点击"检测"按钮查询可作废订单</span>
+            <button
+              onClick={checkCancellableOrders}
+              disabled={checkingCancellable}
+              className="ml-4 px-6 py-2 bg-red-600 text-white rounded hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+            >
+              {checkingCancellable ? '检测中...' : '检测'}
+            </button>
+          </div>
+          {cancellableError && (
+            <p className="mt-4 text-sm text-red-600 bg-red-50 p-3 rounded">{cancellableError}</p>
+          )}
+        </div>
+
+        {/* 检测是否已退货的订单 */}
+        <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 min-h-[120px]">
+          <div className="mb-4">
+            <span className="text-lg font-semibold text-gray-700">检测是否已退货的订单</span>
+          </div>
+          <div className="mt-4 text-center">
+            <span className="text-sm text-gray-500">点击"检测"按钮查询已退货订单</span>
+            <button
+              onClick={checkReturnedOrders}
+              disabled={checkingReturned}
+              className="ml-4 px-6 py-2 bg-red-600 text-white rounded hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+            >
+              {checkingReturned ? '检测中...' : '检测'}
+            </button>
+          </div>
+          {returnedError && (
+            <p className="mt-4 text-sm text-red-600 bg-red-50 p-3 rounded">{returnedError}</p>
+          )}
+        </div>
+      </div>
       {step === 'uploading' && (
         <div className="p-8 text-center text-gray-500 text-sm">
           {uploadProgress || '上传中…'}

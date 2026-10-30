@@ -21,7 +21,7 @@ function fmtDate(s: string | null) {
   return s.slice(0, 10)
 }
 
-export function AbnormalOrderRow({ order }: { order: Order & OrderPricing }) {
+export function AbnormalOrderRow({ order, isAdmin = false }: { order: Order & OrderPricing; isAdmin?: boolean }) {
   const [expanded, setExpanded] = useState(false)
   const [items, setItems] = useState<OrderItem[] | null>(null)
   const [loadingItems, setLoadingItems] = useState(false)
@@ -152,7 +152,7 @@ export function AbnormalOrderRow({ order }: { order: Order & OrderPricing }) {
                       <span className="text-lg">🚚</span>
                       Shipment Info
                     </p>
-                    <dl className="grid grid-cols-5 gap-x-8 gap-y-4 text-sm">
+                    <dl className={`grid gap-x-8 gap-y-4 text-sm ${isAdmin ? 'grid-cols-5' : 'grid-cols-4'}`}>
                       <div className="bg-white p-3 rounded border border-blue-200">
                         <dt className="font-bold text-blue-800 mb-1 text-xs uppercase">Carrier</dt>
                         <dd className="text-gray-800 font-medium">{order.carrier ?? '—'}</dd>
@@ -165,10 +165,12 @@ export function AbnormalOrderRow({ order }: { order: Order & OrderPricing }) {
                         <dt className="font-bold text-blue-800 mb-1 text-xs uppercase">Dest Tracking</dt>
                         <dd className="text-gray-800 font-mono">{order.dest_tracking ?? '—'}</dd>
                       </div>
+                      {isAdmin && (
                       <div className="bg-white p-3 rounded border border-blue-200">
                         <dt className="font-bold text-blue-800 mb-1 text-xs uppercase">Shipment Status</dt>
                         <dd className="text-gray-800 font-medium">{order.shipment_status ?? '—'}</dd>
                       </div>
+                      )}
                       <div className="bg-white p-3 rounded border border-blue-200">
                         <dt className="font-bold text-blue-800 mb-1 text-xs uppercase">Exchange Rate</dt>
                         <dd className="text-gray-800 font-mono">{order.ex_rate_used ?? '—'}</dd>
