@@ -1,8 +1,8 @@
 ﻿# 华翰物流 API 运单状态与尾程跟踪号查询工作流
 
-**版本**: 1.1  
+**版本**: 1.2  
 **创建日期**: 2026-10-17  
-**最后更新**: 2026-10-19  
+**最后更新**: 2026-10-30  
 **状态**: ✅ 已验证
 
 ---
@@ -185,7 +185,7 @@ ORDER BY process_date DESC
 | NO | 新订单 | `created` | 系统已建单 |
 | ND | 未投递 | `shipped` | 运输中 |
 | FK | 异常/退回 | `shipped` | 清关异常 |
-| UE | 签收失败 | `shipped` | 地址问题等 |
+| UE | 签收失败 | `shipped` | 地址问题等；**例外**：UE + 末尾 Detail=AF → `returned` |
 | AP | 已到达/待处理 | `shipped` | 已到达作业中心 |
 | QF | 清关完成 | `shipped` | 已通过清关 |
 | LD | 已装载/运输中 | `shipped` | 已装载等待派送 |
@@ -480,7 +480,7 @@ node _verify_writeback.js
 | `tools/_query_hh_single.js` | 查询单个/多个运单的辅助脚本 |
 | `tools/_writeback_hh.js` | 从 CSV 回写数据库的脚本 |
 | `tools/_verify_writeback.js` | 验证回写数据正确性的脚本 |
-| `tools/lib/admin/column-maps/carrier-shipment-config.js` | 物流商配置文件（状态映射） |
+| `tools/lib/admin/carrier-configs/carrier-shipment-config.js` | 物流商配置文件（状态映射，CLI 镜像） |
 | `docs/华翰api/v1/` | 华翰 API 接口文档 |
 | `docs/hh_status_codes.png` | 华翰轨迹状态码对照表 |
 | `华翰API KEY.txt` | API 认证凭据 |
@@ -491,6 +491,12 @@ node _verify_writeback.js
 ---
 
 ## 📌 更新日志
+
+### **v1.2 (2026-10-30)**
+- ✅ 添加 UE 状态条件映射：当 API 状态=UE 且末尾 Detail 节点=AF（Arrived at origin facility，长期停滞到仓件）时，映射为 `returned` 而非 `shipped`
+- ✅ 更新步骤4状态映射表：UE 行增加条件映射说明
+- ✅ 更新步骤5回写逻辑：UE+AF 记录即使没有 dest_tracking 也会更新 shipment_status
+- ✅ 与燕文 SC38、云途 R 的条件映射保持一致的设计模式
 
 ### **v1.1 (2026-10-19)**
 - ✅ 更新查询逻辑：仅查询 `shipment_status = 'created'` 且 `process_date` 在最近3个月内的运单
@@ -509,7 +515,7 @@ node _verify_writeback.js
 
 ---
 
-**最后更新**: 2026-10-17  
+**最后更新**: 2026-10-30  
 **维护者**: Lingma AI Assistant  
 **文档状态**: ✅ 已创建并验证
 

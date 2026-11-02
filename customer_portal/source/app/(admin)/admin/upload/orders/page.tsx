@@ -5,11 +5,12 @@ import * as XLSX from 'xlsx'
 import { applyColumnMap, detectMappedColumns } from '@/lib/admin/apply-column-map'
 import { ordersColumnMap } from '@/lib/admin/column-maps/orders'
 import { mapAbnormalCode } from '@/lib/admin/abnormal-code-map'
+import { carrierZhToEn } from '@/lib/carrier-config'
 import { MappingPreview } from '@/components/admin/MappingPreview'
 import { AbnormalReview, AbnormalRowData } from '@/components/admin/AbnormalReview'
 import { NavigationGuard } from '@/components/admin/NavigationGuard'
 
-type Step = 'idle' | 'mapping' | 'abnormal_review' | 'uploading' | 'done' | 'error'
+type Step = 'idle' | 'mapping' | 'abnormal_review' | 'carrier_confirm' | 'uploading' | 'done' | 'error'
 
 export default function UploadOrdersPage() {
   const router = useRouter()
@@ -26,6 +27,7 @@ export default function UploadOrdersPage() {
   const [checkingReturned, setCheckingReturned] = useState(false)
   const [cancellableError, setCancellableError] = useState<string | null>(null)
   const [returnedError, setReturnedError] = useState<string | null>(null)
+  const [unmappedCarriers, setUnmappedCarriers] = useState<string[]>([])
 
   // Prevent navigation during upload
   useEffect(() => {
@@ -138,7 +140,41 @@ export default function UploadOrdersPage() {
     for (const r of updatedAbnormal) overrides[r.transaction_id] = r.abnormal_code
     setAbnormalOverrides(overrides)
     setProcessedRows(mappedRows)
-    upload(mappedRows, overrides)
+    
+    // 检查是否有未映射的物流公司
+    const unmapped = checkUnmappedCarriers(mappedRows)
+    if (unmapped.length > 0) {
+      setUnmappedCarriers(unmapped)
+      setStep('carrier_confirm')
+    } else {
+      upload(mappedRows, overrides)
+    }
+  }
+
+  // 检查未映射的物流公司
+  function checkUnmappedCarriers(rows: Record<string, unknown>[]): string[] {
+    const unmapped = new Set<string>()
+    for (const row of rows) {
+      const carrierRaw = row.carrier
+      if (carrierRaw != null && String(carrierRaw).trim()) {
+        const carrierStr = String(carrierRaw).trim()
+        // 检查是否在映射表中
+        if (!carrierZhToEn[carrierStr]) {
+          unmapped.add(carrierStr)
+        }
+      }
+    }
+    return Array.from(unmapped)
+  }
+
+  // 确认继续导入（有未映射物流公司时）
+  function handleCarrierConfirm() {
+    upload(mappedRows, abnormalOverrides)
+  }
+
+  // 取消导入（有未映射物流公司时）
+  function handleCarrierCancel() {
+    reset()
   }
 
   const [uploadProgress, setUploadProgress] = useState('')
@@ -210,7 +246,7 @@ export default function UploadOrdersPage() {
 
   function reset() {
     setStep('idle'); setRawRows([]); setMappedRows([]); setProcessedRows([])
-    setAbnormalRows([]); setResult(null); setError(null)
+    setAbnormalRows([]); setResult(null); setError(null); setUnmappedCarriers([])
   }
 
   async function checkCancellableOrders() {
@@ -357,6 +393,41 @@ export default function UploadOrdersPage() {
           onConfirm={handleAbnormalConfirm}
           onCancel={reset}
         />
+      )}
+      {step === 'carrier_confirm' && (
+        <div className="p-6 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <div className="flex items-center mb-4">
+            <span className="text-2xl mr-2">⚠️</span>
+            <h3 className="text-lg font-semibold text-yellow-800">发现未映射的物流公司</h3>
+          </div>
+          <p className="text-sm text-yellow-700 mb-4">
+            以下物流公司在配置文件中没有映射关系，导入后这些订单的 <code className="bg-yellow-100 px-1 rounded">carrier</code> 字段将设为 <code className="bg-yellow-100 px-1 rounded">NULL</code>：
+          </p>
+          <ul className="list-disc list-inside mb-4 bg-white p-3 rounded border border-yellow-200">
+            {unmappedCarriers.map((carrier, i) => (
+              <li key={i} className="text-sm text-yellow-800 font-mono">{carrier}</li>
+            ))}
+          </ul>
+          <p className="text-xs text-yellow-600 mb-4">
+            如需添加映射，请更新配置文件：<br />
+            <code className="bg-yellow-100 px-1 rounded">tools/lib/admin/column-maps/ma-order-import-config.js</code><br />
+            <code className="bg-yellow-100 px-1 rounded">source/lib/carrier-config.ts</code>
+          </p>
+          <div className="flex gap-3">
+            <button
+              onClick={handleCarrierConfirm}
+              className="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 text-sm"
+            >
+              继续导入
+            </button>
+            <button
+              onClick={handleCarrierCancel}
+              className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-sm"
+            >
+              取消
+            </button>
+          </div>
+        </div>
       )}
 
     </div>

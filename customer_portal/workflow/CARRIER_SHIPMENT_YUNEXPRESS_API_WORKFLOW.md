@@ -1,8 +1,8 @@
 ﻿# 云途物流 API 运单状态与尾程跟踪号查询工作流
 
-**版本**: 1.0  
+**版本**: 1.1  
 **创建日期**: 2026-10-19  
-**最后更新**: 2026-10-20  
+**最后更新**: 2026-10-30  
 **状态**: ✅ 已验证
 
 ---
@@ -738,6 +738,14 @@ JSON 字段说明：
 
 ## 📌 更新日志
 
+### **v1.1 (2026-10-30)**
+- ✅ `R`（Package returned）状态码映射由 `shipped` / `cancelled` 统一改为 `returned`，与燕文 `SC38` 退件签收走同一退货通路
+- ✅ 三处数据源统一：`source/lib/admin/carrier-configs/carrier-shipment-config.ts` 的 `SHIPMENT_STATUS_MAP['YUNExpress']['已退件']`、CLI 镜像 `tools/lib/admin/carrier-configs/carrier-shipment-config.js` 同键、本文档状态码参考表
+- ✅ 修复历史不一致问题：改前 `已退件` 在 `.ts` 主配置为 `cancelled`、CLI 镜像为 `shipped`、本文档为 `shipped`，三方漂移；现统一为 `returned`
+- ✅ 状态码参考表 R 行的业务含义由「退件/弃件（终态）」改为「退件签收（终态）」，说明段落同步更新
+- ✅ 下游联动：`/api/admin/check-returned-orders` 自动按 `shipment_status = 'returned'` 捞取 R 运单进入退货核查页；通过 `/api/admin/return-orders` 可把关联订单 `order_status` 置为 `returned`
+- ✅ 端到端验证 7 个云途状态码（含 R / N 跳过）全部符合预期
+
 ### **v1.0 (2026-10-20)**
 - ✅ 初始版本发布
 - ✅ 打通云途 OAuth2.0 鉴权全链路：`client_credentials` 换 token + HmacSHA256 逐请求签名 + `token`/`date`/`sign` 三请求头
@@ -751,6 +759,6 @@ JSON 字段说明：
 
 ---
 
-**最后更新**: 2026-10-20  
+**最后更新**: 2026-10-30  
 **维护者**: Lingma AI Assistant  
 **文档状态**: ✅ 已创建并验证

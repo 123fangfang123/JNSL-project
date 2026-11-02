@@ -5,6 +5,9 @@
  * 适用于: 订单导出数据*.xlsx 文件
  */
 
+// 2026-10-30：统一使用共享配置，删除重复的 SHIPMENT_STATUS_MAP
+const CARRIER_CFG = require('../carrier-configs/carrier-shipment-config.ts');
+
 module.exports = {
   // ==================== Excel 文件验证 ====================
   VALIDATION: {
@@ -265,36 +268,8 @@ module.exports = {
       }
     },
     
-    // 运单状态映射（各物流商 → 数据库枚举）
-    SHIPMENT_STATUS_MAP: {
-      'YANWEN': {
-        '已制单': 'created',
-        '已揽收': 'shipped',
-        '运输中': 'shipped',
-        '派送中': 'shipped',
-        '已妥投': 'shipped',
-        '异常': 'shipped',
-        '已取消': 'cancelled'
-      },
-      'YUNExpress': {
-        '已预报': 'created',
-        '已揽收': 'shipped',
-        '运输中': 'shipped',
-        '派送中': 'shipped',
-        '已签收': 'shipped',
-        '异常': 'shipped',
-        '已取消': 'cancelled'
-      },
-      'HH EXPRESS': {
-        '已取消': 'cancelled'
-      },
-      'XJ LOGISTICS': {
-        '已出货订单': 'shipped',
-        '签收订单': 'shipped',
-        '异常': 'shipped',
-        '已取消': 'cancelled'
-      }
-    }
+    // 2026-10-30：统一使用共享配置 carrier-shipment-config.ts 的 SHIPMENT_STATUS_MAP
+    SHIPMENT_STATUS_MAP: CARRIER_CFG.SHIPMENT_STATUS_MAP
   }
 };
 

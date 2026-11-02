@@ -16,7 +16,18 @@ export const CARRIERS: CarrierInfo[] = [
   { value: 2, labelZh: '燕文物流(新)',   labelEn: 'YANWEN' },
   { value: 3, labelZh: 'HH', labelEn: 'HH EXPRESS' },
   { value: 4, labelZh: '雄九供应链',   labelEn: 'XJ LOGISTICS' },
+  { value: 5, labelZh: '美西仓库-易可达',   labelEn: 'GC' },
+  { value: 6, labelZh: '美东仓库-易可达',   labelEn: 'GC' },
 ]
+
+/** 物流公司→物流渠道映射 */
+export const CARRIER_TO_CHANNEL: Record<string, string> = {
+  'GC': 'GC_GROUND',
+  'YANWEN': 'YANWEN',
+  'YUNExpress': 'YUNEXPRESS',
+  'HH EXPRESS': 'HH',
+  'XJ LOGISTICS': 'XJ'
+}
 
 /** value → 中文名称 */
 export const carrierLabelZh: Record<number, string> = Object.fromEntries(

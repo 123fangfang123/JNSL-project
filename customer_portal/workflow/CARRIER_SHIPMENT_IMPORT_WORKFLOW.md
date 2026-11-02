@@ -88,6 +88,15 @@ HH Express 的状态格式特殊：`2026-08-10 23:16:07 / SHENZHEN / 已出仓`
 - **已取消** → `cancelled`
 - **其他所有状态** → `shipped`（包括：已出仓、已入仓、运输中等）
 
+
+carrier-shipment-config.ts (单一数据源)
+  ├→ carrier-shipment-config.js (CLI 镜像，自动生成)
+  │    ├→ _yanwen_query_batch.js
+  │    ├→ _yun_query_batch.js
+  │    ├→ yanwen-scheduler-core.js ✓ 新统一
+  │    └→ hh-scheduler-core.js ✓ 新统一
+  └→ order-import-config.js ✓ 新统一
+       └→ import-yunexpress-auto.js 等工具脚本
 ---
 
 ## 🔄 工作流程

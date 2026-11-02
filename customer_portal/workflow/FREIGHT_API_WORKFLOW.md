@@ -146,10 +146,15 @@ customer_portal/reports/
 
 由各适配器内部调用 `lib/freight-db.js` 的 `upsertFreightRecords()` 完成：
 
-1. 批量查询 freight 表中已存在的运单号（每批 100 个）
-2. 不存在的 → `POST` 插入（每批 100 条）
-3. 已存在的 → `PATCH` 更新
-4. DB 写入失败重试 3 次（指数退避）
+1. **API 记录去重**：若同一运单号在待写入列表中有多条记录，将所有费用列（freight / freight_fee / registered_fee / other_fee）求和合并为一条
+2. 批量查询 freight 表中已存在的运单号及其费用字段（每批 100 个）
+3. 不存在的 → `POST` 插入（每批 100 条）
+4. 已存在的 → 比对 freight 表中该运单的 `freight` 总金额：
+   - **金额相同** → 跳过，不更新
+   - **金额不同** → 将所有费用列（freight / freight_fee / registered_fee / other_fee）与 DB 现有值求和后 `PATCH` 更新
+5. DB 写入失败重试 3 次（指数退避）
+
+> **示例：** API 返回同一运单两条记录：(freight=12, registered_fee=10) 和 (freight=-3, registered_fee=-5)，合并后写入 freight=9, registered_fee=5。若 DB 中已有 freight=9 的记录，则跳过不更新。
 
 ---
 
@@ -366,7 +371,7 @@ GET /v1/order/fee-details/get?waybill_number=YT2620400707870554
 | 异常类型 | 处理策略 |
 |----------|----------|
 | 连接失败 | 重试 3 次（指数退避），仍失败终止 |
-| 唯一键冲突 | 正常覆盖更新（upsert） |
+| 唯一键冲突 | 智能合并：freight 相同跳过，不同则费用求和更新 |
 | URL 过长 | 分块查询（每块 100 个运单号） |
 
 ---
@@ -468,6 +473,8 @@ node adapter_hh.js --input /tmp/trackings.json --dry-run
 3. **Supabase 分页限制**：单次查询最多 1000 条，必须分页循环
 4. **Supabase IN 查询 URL 长度**：批量 `in.(...)` 查询需分块（每块 100 个），否则 URL 超长报错
 5. **临时文件传递**：运单号超过 ~200 个时命令行超长，改用临时 JSON 文件传递
+6. **同运单多条记录求和**：API 可能对同一运单返回多条费用记录（含冲正/退款），写入前自动将所有费用列求和合并为一条
+7. **已有记录智能合并**：写入 DB 时，若 freight 表中已存在该运单且 freight 总金额相同则跳过不更新；金额不同则将费用列求和后更新（不是覆盖）
 
 ### HH EXPRESS
 

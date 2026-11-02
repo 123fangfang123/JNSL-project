@@ -1,8 +1,8 @@
 # 燕文物流 API 运单状态与尾程跟踪号查询工作流
 
-**版本**: 1.0  
+**版本**: 1.1  
 **创建日期**: 2026-10-19  
-**最后更新**: 2026-10-19  
+**最后更新**: 2026-10-30  
 **状态**: ✅ 已验证
 
 ---
@@ -515,6 +515,15 @@ node verify_yanwen_writeback.js
 
 ## 📌 更新日志
 
+### **v1.1 (2026-10-30)**
+- ✅ 新增 SC38（退件签收）状态码映射 → DB `returned`，进入退货核查流程
+- ✅ 步骤 3 汇总表拆分 `SC*` 通配规则与 `SC38` 例外，避免阅读歧义
+- ✅ 仓库处理阶段(SC*)参考表把 `SC34-SC38` 拆为 `SC34-SC37`（退件处理 → shipped）+ `SC38`（退件签收 → returned）
+- ✅ 状态映射规则统一收敛到 `source/lib/admin/carrier-configs/carrier-shipment-config.ts` 的 `API_STATUS_MAP['YANWEN']` + `API_STATUS_DESC['YANWEN']` + `SHIPMENT_STATUS_MAP['YANWEN']`（单一数据源）
+- ✅ 定时任务脚本 `tools/_yanwen_query_batch.js` 删除 120+ 行本地私有 `API_STATUS_DESC` 表，改用 `CARRIER_CFG.mapApiStatus` / `getApiStatusDesc`，与云途脚本架构对齐
+- ✅ CLI 镜像 `tools/lib/admin/carrier-configs/carrier-shipment-config.js` 同步新增燕文 API 映射条目
+- ✅ 端到端验证 7 个燕文状态码（含 SC38 / SC99 未收录码兜底）全部符合预期
+
 ### **v1.0 (2026-10-19)**
 - ✅ 初始版本发布
 - ✅ 覆盖完整工作流：API 查询 → 状态映射 → 数据库回写 → 异常处理 → 数据验证
@@ -524,6 +533,6 @@ node verify_yanwen_writeback.js
 
 ---
 
-**最后更新**: 2026-10-19  
+**最后更新**: 2026-10-30  
 **维护者**: Lingma AI Assistant  
 **文档状态**: ✅ 已创建并验证

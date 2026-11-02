@@ -1,6 +1,6 @@
 ﻿import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/service'
-import { carrierZhToEn } from '@/lib/carrier-config'
+import { carrierZhToEn, CARRIER_TO_CHANNEL } from '@/lib/carrier-config'
 import { mapAbnormalCode } from '@/lib/admin/abnormal-code-map'
 
 const ORDER_FIELDS = [
@@ -156,11 +156,16 @@ export async function POST(req: NextRequest) {
       // --- Build shipment row (first tracking_no per order wins) ---
       const trackingNo = String(row.tracking_no ?? '').trim()
       if (trackingNo && !shipmentByTid.has(tid)) {
+        const carrierEn = toCarrier(row.carrier)
+        // 物流渠道映射：优先使用"物流渠道"列的值，为空时根据物流公司自动映射
+        const channelFromRow = row.channel_id ? String(row.channel_id).trim() : ''
+        const channelId = channelFromRow || (carrierEn && CARRIER_TO_CHANNEL[carrierEn]) || null
+        
         shipmentByTid.set(tid, {
           transaction_id: tid,
           tracking_no: trackingNo,
-          carrier: toCarrier(row.carrier),
-            channel_id: row.channel_id ?? null,
+          carrier: carrierEn,
+            channel_id: channelId,
           process_date: toDateStr(row.shipment_date),
           shipment_status: orderMap.get(tid)?.order_status === 'cancelled' ? 'cancelled' : 'created',
         })

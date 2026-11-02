@@ -188,6 +188,7 @@ export default function CheckReturnedOrdersPage() {
               <th className="px-3 py-2 text-left">交易编号</th>
               <th className="px-3 py-2 text-left">订单编号</th>
               <th className="px-3 py-2 text-left">店铺</th>
+              <th className="px-3 py-2 text-left">订单状态</th>
               <th className="px-3 py-2 text-left">发货时间</th>
               <th className="px-3 py-2 text-left">运单号</th>
               <th className="px-3 py-2 text-left">目的追踪号</th>
@@ -209,6 +210,7 @@ export default function CheckReturnedOrdersPage() {
                 <td className="px-3 py-2 font-mono text-xs">{order.transaction_id}</td>
                 <td className="px-3 py-2">{order.order_number}</td>
                 <td className="px-3 py-2">{order.store_name}</td>
+                <td className="px-3 py-2">{order.order_status}</td>
                 <td className="px-3 py-2">{order.dispatch_date}</td>
                 <td className="px-3 py-2">{order.tracking_no || '-'}</td>
                 <td className="px-3 py-2">{order.dest_tracking || '-'}</td>
