@@ -489,7 +489,7 @@ node verify_yanwen_writeback.js
 ### **数据库注意事项**
 - `order_shipment` 表必须有对应的 tracking_no 记录才能更新
 - `dest_tracking` 字段允许 NULL，兼容无尾程跟踪号的特殊情况
-- `shipment_status` 为 TEXT 类型，值必须为合法枚举（created/shipped/cancelled）
+- `shipment_status` 为 TEXT 类型，值必须为合法枚举（created/shipped/cancelled/returned）
 
 ### **特殊运单情况**
 - OR10 状态运单属于"订单已生成"，尚未实际揽收，不返回 dest_tracking

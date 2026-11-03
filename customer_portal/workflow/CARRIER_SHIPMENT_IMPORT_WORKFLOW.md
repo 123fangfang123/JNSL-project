@@ -1,8 +1,8 @@
 ﻿# 物流商运单导入工作流文档
 
-**版本**: 1.7  
+**版本**: 1.8  
 **创建日期**: 2026-08-11  
-**最后更新**: 2026-10-16  
+**最后更新**: 2026-11-03  
 **状态**: ✅ 已创建
 
 ---
@@ -63,6 +63,8 @@
 | 状态 | shipment_status |
 | 跟踪号 | dest_tracking |
 
+> ℹ️ 特殊说明：HHWUE 前缀属华翰特殊渠道，Excel 的“跟踪号”列为空；导入回写时该前缀且无跟踪号的运单写入 `dest_tracking = 'NA'`（其他前缀为空时不更新）。该判断只在回写阶段生效，不参与步骤 5 的 dest_tracking 二次匹配。
+
 #### **雄九物流 (XJ LOGISTICS)**
 | Excel 列名 | 数据库字段 |
 |-----------|-----------|
@@ -120,6 +122,7 @@ carrier-shipment-config.ts (单一数据源)
 ### **步骤4: 通过 tracking_no 匹配并更新**
 - 查询 order_shipment 表中是否存在该 tracking_no
 - 如果存在，更新 shipment_status 和 dest_tracking
+- **HHWUE 前缀例外**：华翰特殊渠道 Excel 无跟踪号，`dest_tracking` 为空时写入 `NA`
 - **不创建新记录，只更新已存在的运单**
 - 记录匹配和未匹配的结果
 
@@ -373,6 +376,11 @@ const CARRIER_IDENTIFIERS = {
 ---
 
 ## 🔄 更新日志
+
+### **v1.8 (2026-11-03)**
+- ✅ **HHWUE 特殊渠道**：导入回写时，HH Express 且 tracking_no 以 `HHWUE` 开头、Excel 无跟踪号 → 写入 `dest_tracking = 'NA'`
+- ✅ 该规则仅在回写阶段生效，不参与 dest_tracking 二次匹配，避免 `NA` 误匹配
+- ✅ 与 API 同步工作流（CARRIER_SHIPMENT_HH_API_WORKFLOW v1.4）口径一致
 
 ### **v1.7 (2026-10-16)**
 - 🔧 **重构雄九 (XJ LOGISTICS) 列映射**：转单号同时映射为 tracking_no 和 dest_tracking（一个 Excel 列 → 多个 DB 字段）

@@ -1,8 +1,8 @@
 ﻿# 华翰物流 API 运单状态与尾程跟踪号查询工作流
 
-**版本**: 1.2  
+**版本**: 1.4  
 **创建日期**: 2026-10-17  
-**最后更新**: 2026-10-30  
+**最后更新**: 2026-11-03  
 **状态**: ✅ 已验证
 
 ---
@@ -18,7 +18,7 @@
 2. **调用 getCargoTrack API**：批量获取物流轨迹状态
 3. **调用 getLastTrackCode API**：批量获取尾程跟踪号及派送商
 4. **状态映射**：将华翰 API 状态码转换为数据库 `shipment_status` 枚举值
-5. **回写数据库**：更新 `order_shipment` 表的 `shipment_status` 和 `dest_tracking` 字段
+5. **回写数据库**：更新 `order_shipment` 表的 `shipment_status` 和 `dest_tracking` 字段；HHWUE 前缀特殊渠道无尾程号时写入 `NA`
 6. **生成异常报告**：对无 dest_tracking 的记录生成异常文件
 
 ### **适用场景**
@@ -106,6 +106,7 @@
 
 **已知行为**：
 - HHWUE 前缀运单属于特殊渠道，即使已妥投也不返回 dest_tracking
+  - 回写时对该前缀且无尾程号的运单写入 `dest_tracking = 'NA'`（仅此特殊情况写 NA）
 - IR 状态运单（仅电子信息未实际发出）不返回 dest_tracking
 
 ---
@@ -176,25 +177,48 @@ ORDER BY process_date DESC
 
 将华翰 API 状态码转换为数据库 `shipment_status` 枚举值：
 
-| API 状态码 | 含义 | DB shipment_status | 说明 |
+| API 状态码 | 官方中文含义 | DB shipment_status | 说明 |
 |-----------|------|-------------------|------|
-| IR | 运单电子信息已收到 | `created` | 仅创建信息，未实际发出 |
+| IR | 电子信息已收到 | `created` | 仅创建信息，未实际发出 |
+| AF | 已入仓 | `shipped` | 到达始发设施 |
+| DF | 已出仓 | `shipped` | 离开始发设施 |
+| GG | 已过港 | `shipped` | 转运至始发机场 |
+| BG | 已报关 | `shipped` | 出口清关完成 |
+| AP | 已交航 | `shipped` | 始发机场收货 |
+| QF | 已起飞 | `shipped` | 离开始发机场 |
+| LD | 已落地 | `shipped` | 到达目的机场 |
+| DR | 到达目的地 | `shipped` | — |
+| QG | 清关中 | `shipped` | 进口清关开始 |
+| YG | 已清关 | `shipped` | 进口清关完成 |
+| JY | 已交邮 | `shipped` | 已交接本地承运商 |
+| CA | 到达尾程承运商 | `shipped` | 到达末公里分拣中心 |
+| CB | 离开尾程承运商 | `shipped` | 离开终端转运中心 |
+| YQ | 已提取 | `shipped` | 到达分拣设施 |
+| IA | 已上网 | `shipped` | Internet Access |
+| WB | 到达中转站 | `shipped` | — |
+| WD | 离开中转站 | `shipped` | — |
+| PB | 到达待取 | `shipped` | — |
+| ND | 运输中 | `shipped` | Normal delivery |
 | CC | 派送妥投 | `shipped` | 已签收 |
-| AF | 到达作业中心 | `shipped` | 已入仓 |
-| DF | 快递操作完成 | `shipped` | 已出仓 |
-| NO | 新订单 | `created` | 系统已建单 |
-| ND | 未投递 | `shipped` | 运输中 |
-| FK | 异常/退回 | `shipped` | 清关异常 |
-| UE | 签收失败 | `shipped` | 地址问题等；**例外**：UE + 末尾 Detail=AF → `returned` |
-| AP | 已到达/待处理 | `shipped` | 已到达作业中心 |
-| QF | 清关完成 | `shipped` | 已通过清关 |
-| LD | 已装载/运输中 | `shipped` | 已装载等待派送 |
-| BG | 已通关 | `shipped` | 已通过海关 |
-| CA | 已取消 | `cancelled` | 运单取消 |
-| IA | 信息已确认 | `shipped` | 信息已确认 |
-| YG | 其他 | `shipped` | 未分类状态 |
+| AC | 清关异常 | `shipped` | 清关异常 |
+| AE | 清关失败 | `shipped` | 清关失败 |
+| DS | 已丢失 | `shipped` | 包裹丢失 |
+| FI | 签收失败 | `shipped` | 派送失败 |
+| UE | 退件 | `shipped` | **例外**：UE + 末尾 Detail=AF → `returned` |
+| UH | 海外退件 | `shipped` | — |
+| NO | 新订单 | `created` | 兼容码，轨迹本质为 IR |
+| AR | 已到达中转设施 | `shipped` | 兼容码 |
+| DP | 已从中转设施发出 | `shipped` | 兼容码 |
+| OD | 已派送 | `shipped` | 兼容码（新词表无「派送中」） |
+| TD | 运输中 | `shipped` | 兼容码 |
+| PD | 已签收 | `shipped` | 兼容码 |
+| NA | 异常 | `shipped` | 兼容码 |
+| FK | 异常/退回 | `shipped` | 兼容码 |
+| RD | 已退件 | `shipped` | 兼容码 |
+| CW / CN | 已取消 | `cancelled` | 兼容码 |
+| DN | 未找到 | 不更新（`null`） | 兼容码，非业务状态 |
 
-> 📌 映射规则参考 `carrier-shipment-config.js` 中的 `SHIPMENT_STATUS_MAP['HH EXPRESS']`
+> 📌 映射规则以单一数据源 `source/lib/admin/carrier-configs/carrier-shipment-config.ts` 中的 `API_STATUS_MAP['HH EXPRESS']` 为准，CLI 通过生成的 `tools/lib/admin/carrier-configs/carrier-shipment-config.js` 使用同一份配置。
 
 ### **步骤 5: 回写数据库**
 
@@ -211,6 +235,7 @@ ORDER BY process_date DESC
 - **所有查询到的运单都会更新 `shipment_status`**：因为这些运单原本状态都是 `created`，需要根据API返回的最新状态进行更新
 - **如果有 `dest_tracking`，同时更新该字段**：API返回的 `TrackingNumber` 即为尾程跟踪号
 - **如果API未返回 `dest_tracking`，不更新该字段**：保持原有值（通常为 NULL）
+- **例外：HHWUE 前缀特殊渠道**：该前缀运单 API 永不返回尾程号，且库中 `dest_tracking` 为空时写入 `NA`；若库中已有值则保留。**只有 HHWUE 前缀会写 NA，其他无尾程号的运单仍保持不更新。**
 
 **回写逻辑说明**：
 - 由于查询条件限制为 `shipment_status = 'created'`，这些运单原本就没有实际发出
@@ -226,6 +251,8 @@ API查询: 获取最新状态和尾程跟踪号
   ↓
 回写后: shipment_status = 'shipped'/'created'/'cancelled'
         dest_tracking = '尾程单号'（如果有）
+                        'NA'（HHWUE 前缀且无尾程号）
+                        NULL（其他无尾程号的情况）
 ```
 
 ### **步骤 6: 生成异常报告与 CSV 导出**
@@ -271,7 +298,7 @@ API查询: 获取最新状态和尾程跟踪号
 
 | 异常场景 | 处理策略 | 说明 |
 |---------|---------|------|
-| 无 dest_tracking 返回 | 仍更新 shipment_status，不更新 dest_tracking | HHWUE 前缀特殊渠道、IR 状态运单 |
+| 无 dest_tracking 返回 | 仍更新 shipment_status；HHWUE 前缀写 `dest_tracking = 'NA'`，其他前缀不更新 dest_tracking | HHWUE 前缀特殊渠道、IR 状态运单 |
 | 数据库更新失败 | 记录错误信息，继续处理其他记录 | 逐条更新，单条失败不影响全局 |
 | tracking_no 在数据库中不存在 | 跳过，不计入更新统计 | 可能是脏数据 |
 | shipment_status 为 NULL | 不写入 status 字段，仅写入 dest_tracking | 避免 enum 校验错误 |
@@ -292,26 +319,39 @@ API查询: 获取最新状态和尾程跟踪号
 
 ## 📊 华翰轨迹状态码完整参考
 
-| 状态码 | 英文含义 | 中文含义 | DB 映射 |
+| 状态码 | 官方英文含义 | 官方中文含义 | DB 映射 |
 |--------|---------|---------|---------|
-| IR | Information Received | 运单电子信息已收到 | `created` |
-| AF | Arrived at Facility | 到达作业中心（已入仓） | `shipped` |
-| DF | Delivery Finished | 快递操作完成（已出仓） | `shipped` |
-| NO | New Order | 新订单 | `shipped` |
-| CC | Cargo Completed | 派送妥投 | `shipped` |
-| ND | Not Delivered | 未投递 | `shipped` |
-| FK | Failed/Return | 异常/退回 | `shipped` |
-| UE | Unable to Deliver | 签收失败 | `shipped` |
-| WB | Warehouse Bound | 到达中转仓 | `shipped` |
-| AP | Arrived/Processing | 已到达/待处理 | `shipped` |
-| QF | Customs Cleared | 清关完成 | `shipped` |
-| LD | Loaded/In Transit | 已装载/运输中 | `shipped` |
-| BG | Border Gone | 已通关 | `shipped` |
-| CA | Cancelled | 已取消 | `shipped` |
-| IA | Info Acknowledged | 信息已确认 | `shipped` |
-| YG | Other | 其他 | `shipped` |
+| IR | Shipment information received | 电子信息已收到 | `created` |
+| AF | Arrived at origin facility | 已入仓 | `shipped` |
+| DF | Departed from origin facility | 已出仓 | `shipped` |
+| GG | Transfer to Origin airport | 已过港 | `shipped` |
+| BG | Export customs clearance completed | 已报关 | `shipped` |
+| AP | Received by airport of Origin | 已交航 | `shipped` |
+| QF | Departed from airport of Origin | 已起飞 | `shipped` |
+| LD | Arrived at destination airport | 已落地 | `shipped` |
+| DR | Destination Reached | 到达目的地 | `shipped` |
+| QG | Import Customs clearance started | 清关中 | `shipped` |
+| YG | Import Customs clearance completed | 已清关 | `shipped` |
+| JY | Has been given to local carrier | 已交邮 | `shipped` |
+| CA | arrived at last mile sorting center | 到达尾程承运商 | `shipped` |
+| CB | Leaving the terminal transfer center | 离开尾程承运商 | `shipped` |
+| YQ | Arrived at sort facility | 已提取 | `shipped` |
+| IA | Internet Access | 已上网 | `shipped` |
+| WB | Arrived at Transit Facility | 到达中转站 | `shipped` |
+| WD | Departed from Transit Facility | 离开中转站 | `shipped` |
+| PB | Arrival to be picked up | 到达待取 | `shipped` |
+| ND | Normal delivery | 运输中 | `shipped` |
+| CC | Delivered | 派送妥投 | `shipped` |
+| AC | Abnormal customs clearance | 清关异常 | `shipped` |
+| AE | Customs clearance failed | 清关失败 | `shipped` |
+| DS | The package has been lost | 已丢失 | `shipped` |
+| FI | Delivery failed | 签收失败 | `shipped` |
+| UE | Untread Expresse | 退件 | `shipped`（UE+AF → `returned`） |
+| UH | Overseas return | 海外退件 | `shipped` |
 
-> 📌 完整状态码图片见：`docs/hh_status_codes.png`
+> 📌 上表为官方 `getCargoTrack` 状态码表（27 个）。`NO/AR/DP/OD/TD/PD/NA/FK/RD/CW/CN/DN` 为历史兼容码，映射见步骤 4。
+>
+> 📌 完整状态码图片见：`docs/hh_status_codes.png`、`docs/API接口文档/华翰api/uploads/mindoc/images/m_dda782192c155c0f4053a9980d2eeace_r.png`
 
 ---
 
@@ -464,11 +504,12 @@ node _verify_writeback.js
 ### **数据库注意事项**
 - `order_shipment` 表必须有对应的 tracking_no 记录才能更新
 - `dest_tracking` 字段允许 NULL，兼容无尾程跟踪号的特殊情况
-- `shipment_status` 为 TEXT 类型，值必须为合法枚举（created/shipped/cancelled）
+- `shipment_status` 为 TEXT 类型，值必须为合法枚举（created/shipped/cancelled/returned）
 
 ### **特殊运单前缀**
 - HHWUE 前缀运单属于特殊渠道，getLastTrackCode 不返回 dest_tracking
 - 这是正常行为，不是 API 错误
+- 回写时该前缀且无尾程号的运单统一写入 `dest_tracking = 'NA'`，不再进入“无尾程号”异常文件
 
 ---
 
@@ -491,6 +532,19 @@ node _verify_writeback.js
 ---
 
 ## 📌 更新日志
+
+### **v1.4 (2026-11-03)**
+- ✅ 新增 HHWUE 特殊渠道回写规则：`getLastTrackCode` 无返回且库中 `dest_tracking` 为空时写入 `'NA'`（仅该前缀生效）
+- ✅ 同步修改 `tools/workflow_hh_created.js`（手工工作流）与 `tools/scheduler/hh-scheduler-core.js`（每日定时任务）
+- ✅ 异常文件不再包含 HHWUE 前缀运单（已通过 NA 标记）
+
+### **v1.3 (2026-11-03)**
+- ✅ 以官方状态码表为准重写 `API_STATUS_MAP['HH EXPRESS']` / `API_STATUS_DESC['HH EXPRESS']`（单一数据源：`source/lib/admin/carrier-configs/carrier-shipment-config.ts`）
+- ✅ 修正错误口径：`CC` 派送妥投（原误映射为「已预报」）、`CA` 到达尾程承运商（原误按「已取消」）、`QF` 已起飞、`LD` 已落地、`AP` 已交航、`BG` 已报关、`YG` 已清关
+- ✅ `UE` 退件，`FI` 签收失败、`AC/AE` 清关异常/失败、`DS` 已丢失 归入 `shipped`；`CW/CN` 已取消 → `cancelled`
+- ✅ 保留历史兼容码 `NO/AR/DP/OD/TD/PD/NA/FK/RD`，新增通用「异常」键承载 `NA/FK`；`DN`（未找到）返回 `null`，不写 `shipment_status`
+- ✅ 同步重新生成 CLI 镜像 `tools/lib/admin/carrier-configs/carrier-shipment-config.js`
+- ✅ 手动工作流 `tools/workflow_hh_created.js` 移除本地 `STATUS_MAP`，改用共享配置 `mapApiStatus()`，与定时任务使用同一份映射
 
 ### **v1.2 (2026-10-30)**
 - ✅ 添加 UE 状态条件映射：当 API 状态=UE 且末尾 Detail 节点=AF（Arrived at origin facility，长期停滞到仓件）时，映射为 `returned` 而非 `shipped`
@@ -515,7 +569,7 @@ node _verify_writeback.js
 
 ---
 
-**最后更新**: 2026-10-30  
+**最后更新**: 2026-11-03  
 **维护者**: Lingma AI Assistant  
 **文档状态**: ✅ 已创建并验证
 

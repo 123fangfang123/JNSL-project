@@ -11,10 +11,13 @@
  *   修改状态映射 → 只改 SHIPMENT_STATUS_MAP
  *   接入物流商 API → 在 API_STATUS_MAP / API_STATUS_DESC 各加一条（API 状态码 → 中文状态名）
  *
- * 版本: 1.3
- * 最后更新: 2026-10-20
+ * 版本: 1.4
+ * 最后更新: 2026-11-03
  *
  * 变更:
+ *   v1.4 (2026-11-03) 补齐 HH EXPRESS 的 API_STATUS_MAP / API_STATUS_DESC（以官方状态码表为准，
+ *                     修正 CC 派送妥投、CA 到达尾程承运商、QF 已起飞、LD 已落地、AP 已交航等口径）；
+ *                     SHIPMENT_STATUS_MAP['HH EXPRESS'] 增加通用「异常」键
  *   v1.3 (2026-10-20) 新增 XJ LOGISTICS 的 API_STATUS_MAP / API_STATUS_DESC（selectTrack.htm 的 businessStatus 恒等映射打底，真实值待 IP 加白后采样补充）
  *   v1.2 (2026-10-19) 合并 CLI 镜像中较新的状态码（YANWEN 已妥投 / HH EXPRESS 8 个 / XJ 已收货订单）；
  *                     CLI 镜像 carrier-shipment-config.js 改为由本文件自动生成，不再手工维护
@@ -152,6 +155,7 @@ export const SHIPMENT_STATUS_MAP: Record<string, Record<string, string>> = {
     '签收失败':            'shipped',
     '退件':                'shipped',
     '海外退件':            'shipped',
+    '异常':                'shipped',   // 2026-11-03 新增：API 通用异常码（NA/FK）
     // --- 2026-10-19 由 CLI 镜像合并（含 2026-10-17 API 查询发现的新状态码）---
     '已交航':              'shipped',   // 与「已交船」同为交运节点的不同导出用词
     '已丢失':              'shipped',
@@ -240,6 +244,49 @@ export const API_STATUS_MAP: Record<string, Record<string, string | null>> = {
     '异常':       '异常',
     '已取消':     '已取消',
   },
+  'HH EXPRESS': {
+    // getCargoTrack 返回的 Status，中文名以官方「轨迹状态代码对应表」为准（2026-11-03 补齐）
+    IR: '电子信息已收到',   // 电子信息已收到
+    AF: '已入仓',
+    DF: '已出仓',
+    GG: '已过港',
+    BG: '已报关',
+    AP: '已交航',
+    QF: '已起飞',
+    LD: '已落地',
+    DR: '到达目的地',
+    QG: '清关中',
+    YG: '已清关',
+    JY: '已交邮',
+    CA: '到达尾程承运商',
+    CB: '离开尾程承运商',
+    YQ: '已提取',
+    IA: '已上网',
+    WB: '到达中转站',
+    WD: '离开中转站',
+    PB: '到达待取',
+    ND: '运输中',
+    CC: '派送妥投',
+    AC: '清关异常',
+    AE: '清关失败',
+    DS: '已丢失',
+    FI: '签收失败',
+    UE: '退件',             // UE + 末尾 AF 的条件映射仍由调用方处理为 returned
+    UH: '海外退件',
+    // --- 官方表未收录但历史数据/镜像中出现过的兼容码 ---
+    NO: '电子信息已收到',   // 新订单，轨迹本质为 IR
+    AR: '到达中转站',
+    DP: '离开中转站',
+    OD: '运输中',           // 已派送，新词表无「派送中」
+    TD: '运输中',
+    PD: '派送妥投',
+    NA: '异常',
+    FK: '异常',             // 异常/退回
+    RD: '退件',
+    CW: '已取消',
+    CN: '已取消',
+    DN: null,               // 未找到：非业务状态，不更新 shipment_status
+  },
 }
 
 /** API 状态码 → 官方中文释义（仅用于日志与报表展示） */
@@ -302,6 +349,48 @@ export const API_STATUS_DESC: Record<string, Record<string, string>> = {
     '确认订单':   '确认订单',
     '异常':       '异常',
     '已取消':     '已取消',
+  },
+  'HH EXPRESS': {
+    IR: '电子信息已收到',
+    AF: '已入仓',
+    DF: '已出仓',
+    GG: '已过港',
+    BG: '已报关',
+    AP: '已交航',
+    QF: '已起飞',
+    LD: '已落地',
+    DR: '到达目的地',
+    QG: '清关中',
+    YG: '已清关',
+    JY: '已交邮',
+    CA: '到达尾程承运商',
+    CB: '离开尾程承运商',
+    YQ: '已提取',
+    IA: '已上网',
+    WB: '到达中转站',
+    WD: '离开中转站',
+    PB: '到达待取',
+    ND: '运输中',
+    CC: '派送妥投',
+    AC: '清关异常',
+    AE: '清关失败',
+    DS: '已丢失',
+    FI: '签收失败',
+    UE: '退件',
+    UH: '海外退件',
+    // 兼容码
+    NO: '新订单',
+    AR: '已到达中转设施',
+    DP: '已从中转设施发出',
+    OD: '已派送',
+    TD: '运输中',
+    PD: '已签收',
+    NA: '异常',
+    FK: '异常/退回',
+    RD: '已退件',
+    CW: '已取消',
+    CN: '已取消',
+    DN: '未找到',
   },
 }
 

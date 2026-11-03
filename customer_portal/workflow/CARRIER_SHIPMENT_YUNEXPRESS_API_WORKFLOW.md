@@ -1,8 +1,8 @@
 ﻿# 云途物流 API 运单状态与尾程跟踪号查询工作流
 
-**版本**: 1.1  
+**版本**: 1.2  
 **创建日期**: 2026-10-19  
-**最后更新**: 2026-10-30  
+**最后更新**: 2026-11-03  
 **状态**: ✅ 已验证
 
 ---
@@ -370,7 +370,7 @@ Object.keys(patch).forEach(f => {
 |---|---|
 | 1 | `dest_tracking`：DB vs API 逐条比对，输出匹配率 |
 | 2 | `shipment_status`：DB vs `mapApiStatus(API 码)` 逐条比对，输出匹配率 |
-| 3 | 完整性：无 NULL/空 `shipment_status`、无 NULL/空 `dest_tracking`、状态值必须在 `created/shipped/cancelled` 内 |
+| 3 | 完整性：无 NULL/空 `shipment_status`、状态值必须在 `created/shipped/cancelled/returned` 内；空 `dest_tracking` 仅作提示（API 未返回尾程号属正常，不计为失败） |
 | 4 | 唯一性：`tracking_no` 无重复 |
 | 5 | 无误伤：快照 vs 当前，7 个字段全部逐条比对，确认只有预期字段变化 |
 
@@ -442,7 +442,7 @@ mapApiStatus(carrier, apiCode)
   ├─ 物流商未配置            → null
   ├─ 状态码未收录            → null   （报表标记「(未收录)」）
   ├─ 映射值为 null（如 N）   → null   （报表标记「(无业务状态)」）
-  └─ 正常                    → created / shipped / cancelled
+  └─ 正常                    → created / shipped / cancelled / returned
 ```
 
 **返回 null 时调用方必须跳过 `shipment_status` 字段的更新**，绝不能写 null 或猜测默认值。
@@ -738,6 +738,11 @@ JSON 字段说明：
 
 ## 📌 更新日志
 
+### **v1.2 (2026-11-03)**
+- ✅ 验证脚本 `VALID_STATUS` 补上 `returned`，R 状态退件不再被误报为非法枚举
+- ✅ 快照比对改用 `tracking_no + process_date` 复合键，消除「所有记录都被报为消失」的误判
+- ✅ 空 `dest_tracking` 不再计入 fatal：仅提示，API 未返回尾程号属实正常（真实问题由检查 1 的 `destMismatch` 覆盖），修复 2026-11-03 运行中 `YT2621700709382253`（状态 F 已预报）导致的退出码 1
+
 ### **v1.1 (2026-10-30)**
 - ✅ `R`（Package returned）状态码映射由 `shipped` / `cancelled` 统一改为 `returned`，与燕文 `SC38` 退件签收走同一退货通路
 - ✅ 三处数据源统一：`source/lib/admin/carrier-configs/carrier-shipment-config.ts` 的 `SHIPMENT_STATUS_MAP['YUNExpress']['已退件']`、CLI 镜像 `tools/lib/admin/carrier-configs/carrier-shipment-config.js` 同键、本文档状态码参考表
@@ -759,6 +764,6 @@ JSON 字段说明：
 
 ---
 
-**最后更新**: 2026-10-30  
+**最后更新**: 2026-11-03  
 **维护者**: Lingma AI Assistant  
 **文档状态**: ✅ 已创建并验证
