@@ -105,6 +105,8 @@ export function OrdersTable({ stores, customerId, isAdmin = false }: Props) {
       if (trackingNoRef.current) params.set('trackingNo', trackingNoRef.current)
       if (productRef.current) params.set('product', productRef.current)
       if (isAbnormalRef.current) params.set('isAbnormal', isAbnormalRef.current)
+      if (sortKey) params.set('sort', sortKey)
+      params.set('sortDir', sortDir)
 
       const res = await fetch(`/api/orders?${params.toString()}`)
       const data = await res.json()
@@ -127,7 +129,7 @@ export function OrdersTable({ stores, customerId, isAdmin = false }: Props) {
     } finally {
       setLoading(false)
     }
-  }, [currentPage, pageSize, customerId])
+  }, [currentPage, pageSize, customerId, sortKey, sortDir])
 
   useEffect(() => {
     fetchData()
@@ -154,6 +156,7 @@ export function OrdersTable({ stores, customerId, isAdmin = false }: Props) {
       setSortKey(key)
       setSortDir('asc')
     }
+    setCurrentPage(1)
   }
 
   function toggleGroup(orderNumber: string, storeName: string) {
@@ -166,21 +169,10 @@ export function OrdersTable({ stores, customerId, isAdmin = false }: Props) {
     })
   }
 
-  const sorted = useMemo(() => {
-    if (!sortKey) return orders
-    return [...orders].sort((a, b) => {
-      const av = (a[sortKey] as string | number) ?? ''
-      const bv = (b[sortKey] as string | number) ?? ''
-      if (av < bv) return sortDir === 'asc' ? -1 : 1
-      if (av > bv) return sortDir === 'asc' ? 1 : -1
-      return 0
-    })
-  }, [orders, sortKey, sortDir])
-
   // Group orders by order_number + store_name
   const groupedOrders = useMemo(() => {
     const groups = new Map<string, OrderGroup>()
-    for (const order of sorted) {
+    for (const order of orders) {
       const groupKey = `${order.order_number}-${order.store_name}`
       if (!groups.has(groupKey)) {
         groups.set(groupKey, {
@@ -195,7 +187,7 @@ export function OrdersTable({ stores, customerId, isAdmin = false }: Props) {
       group.totalCount++
     }
     return Array.from(groups.values())
-  }, [sorted])
+  }, [orders])
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize))
 
@@ -439,7 +431,7 @@ export function OrdersTable({ stores, customerId, isAdmin = false }: Props) {
           {error}
         </div>
       )}
-      {!error && sorted.length === 0 && !loading ? (
+      {!error && orders.length === 0 && !loading ? (
         <div className="text-center py-16 text-gray-400 bg-white rounded-lg border">
           No orders found for the selected period.
         </div>

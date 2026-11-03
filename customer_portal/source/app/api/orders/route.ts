@@ -13,6 +13,11 @@ export async function GET(request: NextRequest) {
   const trackingNo = searchParams.get('trackingNo')
   const product = searchParams.get('product')
   const isAbnormal = searchParams.get('isAbnormal')
+  const sort = searchParams.get('sort') || 'order_number'
+  const sortDir = searchParams.get('sortDir') || 'asc'
+
+  const VIEW_SORT_FIELDS = new Set(['order_date', 'order_number', 'transaction_id', 'store_name', 'country', 'dispatch_date', 'order_status', 'is_abnormal'])
+  const SHIPMENT_SORT_FIELDS = new Set(['tracking_no', 'carrier'])
 
   const { supabase, customerId, isAdmin } = await getPortalContext()
 
@@ -119,6 +124,68 @@ export async function GET(request: NextRequest) {
 
   // Fetch one page of orders
   const offset = (page - 1) * pageSize
+  const ascending = sortDir === 'asc'
+  const useShipmentSort = SHIPMENT_SORT_FIELDS.has(sort)
+  let sortedTransactionIds: string[] | null = null
+
+  if (useShipmentSort) {
+    // Step 1: Get all matching transaction IDs
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let idQuery: any = supabase.from('orders_with_billing_display').select('transaction_id')
+    idQuery = applyFilters(idQuery)
+    if (productFilterIds) idQuery = idQuery.in('transaction_id', productFilterIds)
+    if (trackingFilterIds) idQuery = idQuery.in('transaction_id', trackingFilterIds)
+
+    const allIds: string[] = []
+    let idOffset = 0
+    let idMore = true
+    while (idMore) {
+      const { data: idBatch } = await idQuery.range(idOffset, idOffset + 999)
+      if (idBatch && idBatch.length > 0) {
+        allIds.push(...idBatch.map((r: any) => r.transaction_id))
+        idOffset += 1000
+        if (idBatch.length < 1000) idMore = false
+      } else {
+        idMore = false
+      }
+    }
+
+    if (allIds.length === 0) {
+      return NextResponse.json({ orders: [], total, stats })
+    }
+
+    // Step 2: Fetch shipment data for all matching transactions (batched)
+    let allShipmentsForSort: any[] = []
+    for (let i = 0; i < allIds.length; i += 100) {
+      const batch = allIds.slice(i, i + 100)
+      const { data: shipData } = await supabase
+        .from('order_shipment')
+        .select(`transaction_id, ${sort}`)
+        .in('transaction_id', batch)
+      if (shipData) allShipmentsForSort = allShipmentsForSort.concat(shipData)
+    }
+
+    const shipmentMap = new Map<string, string>()
+    for (const s of allShipmentsForSort) {
+      if (!shipmentMap.has(s.transaction_id)) {
+        shipmentMap.set(s.transaction_id, s[sort] ?? '')
+      }
+    }
+
+    // Step 3: Sort transaction IDs by shipment field
+    allIds.sort((a, b) => {
+      const av = shipmentMap.get(a) ?? ''
+      const bv = shipmentMap.get(b) ?? ''
+      return ascending ? av.localeCompare(bv) : bv.localeCompare(av)
+    })
+
+    sortedTransactionIds = allIds.slice(offset, offset + pageSize)
+
+    if (sortedTransactionIds.length === 0) {
+      return NextResponse.json({ orders: [], total, stats })
+    }
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let ordersQuery: any = supabase
     .from('orders_with_billing_display')
@@ -129,9 +196,19 @@ export async function GET(request: NextRequest) {
   ordersQuery = applyFilters(ordersQuery)
   if (productFilterIds) ordersQuery = ordersQuery.in('transaction_id', productFilterIds)
   if (trackingFilterIds) ordersQuery = ordersQuery.in('transaction_id', trackingFilterIds)
+
+  if (sortedTransactionIds) {
+    ordersQuery = ordersQuery.in('transaction_id', sortedTransactionIds)
+  }
+
+  if (!useShipmentSort && VIEW_SORT_FIELDS.has(sort)) {
+    ordersQuery = ordersQuery.order(sort, { ascending })
+  } else if (!useShipmentSort) {
+    ordersQuery = ordersQuery.order('order_number', { ascending: true })
+  }
+
   const { data: orders, error: ordersError } = await ordersQuery
-    .order('order_number', { ascending: true })
-    .range(offset, offset + pageSize - 1)
+    .range(0, sortedTransactionIds ? sortedTransactionIds.length - 1 : pageSize - 1)
 
   if (ordersError) return NextResponse.json({ error: ordersError.message }, { status: 500 })
 
@@ -183,6 +260,13 @@ export async function GET(request: NextRequest) {
         dest_tracking: s?.dest_tracking ?? null,
       }
     })
+  }
+
+  if (sortedTransactionIds) {
+    const orderMap = new Map(enriched.map((o: any) => [o.transaction_id, o]))
+    enriched = sortedTransactionIds
+      .filter(id => orderMap.has(id))
+      .map(id => orderMap.get(id)!)
   }
 
   return NextResponse.json({ orders: enriched, total, stats })
