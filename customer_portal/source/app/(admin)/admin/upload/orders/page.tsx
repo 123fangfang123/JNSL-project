@@ -312,50 +312,25 @@ export default function UploadOrdersPage() {
         </div>
       )}
 
-      {/* 检测订单区域 */}
-      <div className="mt-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">检测订单</h1>
-        
-        {/* 检测是否可作废的订单 */}
-        <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 mb-6 min-h-[120px]">
-          <div className="mb-4">
-            <span className="text-lg font-semibold text-gray-700">检测是否可作废的订单</span>
-          </div>
-          <div className="mt-4 text-center">
-            <span className="text-sm text-gray-500">点击"检测"按钮查询可作废订单</span>
-            <button
-              onClick={checkCancellableOrders}
-              disabled={checkingCancellable}
-              className="ml-4 px-6 py-2 bg-red-600 text-white rounded hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-            >
-              {checkingCancellable ? '检测中...' : '检测'}
-            </button>
-          </div>
-          {cancellableError && (
-            <p className="mt-4 text-sm text-red-600 bg-red-50 p-3 rounded">{cancellableError}</p>
-          )}
-        </div>
+      {step === 'mapping' && (
+        <MappingPreview
+          inline
+          mapped={mappedCols}
+          unmapped={unmappedCols}
+          onConfirm={handleMappingConfirm}
+          onCancel={reset}
+        />
+      )}
 
-        {/* 检测是否已退货的订单 */}
-        <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 min-h-[120px]">
-          <div className="mb-4">
-            <span className="text-lg font-semibold text-gray-700">检测是否已退货的订单</span>
-          </div>
-          <div className="mt-4 text-center">
-            <span className="text-sm text-gray-500">点击"检测"按钮查询已退货订单</span>
-            <button
-              onClick={checkReturnedOrders}
-              disabled={checkingReturned}
-              className="ml-4 px-6 py-2 bg-red-600 text-white rounded hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-            >
-              {checkingReturned ? '检测中...' : '检测'}
-            </button>
-          </div>
-          {returnedError && (
-            <p className="mt-4 text-sm text-red-600 bg-red-50 p-3 rounded">{returnedError}</p>
-          )}
-        </div>
-      </div>
+      {step === 'abnormal_review' && (
+        <AbnormalReview
+          inline
+          rows={abnormalRows}
+          onConfirm={handleAbnormalConfirm}
+          onCancel={reset}
+        />
+      )}
+
       {step === 'uploading' && (
         <div className="p-8 text-center text-gray-500 text-sm">
           {uploadProgress || '上传中…'}
@@ -378,21 +353,6 @@ export default function UploadOrdersPage() {
           )}
           <button onClick={reset} className="mt-4 text-sm text-green-700 underline">继续导入其他文件</button>
         </div>
-      )}
-      {step === 'mapping' && (
-        <MappingPreview
-          mapped={mappedCols}
-          unmapped={unmappedCols}
-          onConfirm={handleMappingConfirm}
-          onCancel={reset}
-        />
-      )}
-      {step === 'abnormal_review' && (
-        <AbnormalReview
-          rows={abnormalRows}
-          onConfirm={handleAbnormalConfirm}
-          onCancel={reset}
-        />
       )}
       {step === 'carrier_confirm' && (
         <div className="p-6 bg-yellow-50 border border-yellow-200 rounded-lg">
@@ -429,6 +389,51 @@ export default function UploadOrdersPage() {
           </div>
         </div>
       )}
+
+      {/* 检测订单区域 */}
+      <div className="mt-8">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">检测订单</h1>
+        
+        {/* 检测是否可作废的订单 */}
+        <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 mb-6 min-h-[120px]">
+          <div className="mb-4">
+            <span className="text-lg font-semibold text-gray-700">检测是否可作废的订单</span>
+          </div>
+          <div className="mt-4 text-center">
+            <span className="text-sm text-gray-500">点击"检测"按钮查询可作废订单</span>
+            <button
+              onClick={checkCancellableOrders}
+              disabled={checkingCancellable || step === 'uploading'}
+              className="ml-4 px-6 py-2 bg-red-600 text-white rounded hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+            >
+              {checkingCancellable ? '检测中...' : '检测'}
+            </button>
+          </div>
+          {cancellableError && (
+            <p className="mt-4 text-sm text-red-600 bg-red-50 p-3 rounded">{cancellableError}</p>
+          )}
+        </div>
+
+        {/* 检测是否已退货的订单 */}
+        <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 min-h-[120px]">
+          <div className="mb-4">
+            <span className="text-lg font-semibold text-gray-700">检测是否已退货的订单</span>
+          </div>
+          <div className="mt-4 text-center">
+            <span className="text-sm text-gray-500">点击"检测"按钮查询已退货订单</span>
+            <button
+              onClick={checkReturnedOrders}
+              disabled={checkingReturned || step === 'uploading'}
+              className="ml-4 px-6 py-2 bg-red-600 text-white rounded hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+            >
+              {checkingReturned ? '检测中...' : '检测'}
+            </button>
+          </div>
+          {returnedError && (
+            <p className="mt-4 text-sm text-red-600 bg-red-50 p-3 rounded">{returnedError}</p>
+          )}
+        </div>
+      </div>
 
     </div>
     </>

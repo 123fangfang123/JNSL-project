@@ -7,18 +7,20 @@ interface Props {
   unmapped: string[]
   onConfirm: () => void
   onCancel: () => void
+  inline?: boolean
 }
 
-export function MappingPreview({ mapped, unmapped, onConfirm, onCancel }: Props) {
-  return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 max-h-[80vh] flex flex-col">
+export function MappingPreview({ mapped, unmapped, onConfirm, onCancel, inline = false }: Props) {
+  const card = (
+      <div className={inline
+        ? 'bg-white rounded-xl border border-gray-200 p-6 flex flex-col'
+        : 'bg-white rounded-xl shadow-xl max-w-lg w-full p-6 max-h-[80vh] flex flex-col'}>
         <h2 className="text-lg font-semibold mb-1">Column Mapping Preview</h2>
         <p className="text-sm text-gray-500 mb-4">
           Verify that the source columns (from your Excel file) map to the correct database fields.
         </p>
 
-        <div className="overflow-y-auto flex-1 mb-4">
+        <div className={inline ? 'overflow-y-auto max-h-[50vh] mb-4' : 'overflow-y-auto flex-1 mb-4'}>
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b">
@@ -61,6 +63,13 @@ export function MappingPreview({ mapped, unmapped, onConfirm, onCancel }: Props)
           </button>
         </div>
       </div>
+  )
+
+  if (inline) return card
+
+  return (
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+      {card}
     </div>
   )
 }

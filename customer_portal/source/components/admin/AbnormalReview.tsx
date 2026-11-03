@@ -26,9 +26,10 @@ interface Props {
   rows: AbnormalRowData[]
   onConfirm: (updatedRows: AbnormalRowData[]) => void
   onCancel: () => void
+  inline?: boolean
 }
 
-export function AbnormalReview({ rows, onConfirm, onCancel }: Props) {
+export function AbnormalReview({ rows, onConfirm, onCancel, inline = false }: Props) {
   const [codes, setCodes] = useState<Record<string, string>>(() => {
     const init: Record<string, string> = {}
     for (const r of rows) init[r.transaction_id] = r.abnormal_code
@@ -39,8 +40,12 @@ export function AbnormalReview({ rows, onConfirm, onCancel }: Props) {
   const missingCount = rows.filter((r) => r.reason_missing).length
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-xl max-w-3xl w-full max-h-[80vh] flex flex-col p-6">
+    <div className={inline
+      ? 'bg-white rounded-xl border border-gray-200 flex flex-col p-6'
+      : 'fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4'}>
+      <div className={inline
+        ? 'flex flex-col w-full'
+        : 'bg-white rounded-xl shadow-xl max-w-3xl w-full max-h-[80vh] flex flex-col p-6'}>
         <h2 className="text-lg font-semibold mb-1 text-orange-600">Review Abnormal Orders</h2>
         <p className="text-sm text-gray-500 mb-4">
           {rows.length} abnormal order{rows.length !== 1 ? 's' : ''} detected. Verify the code for each before uploading.
@@ -52,7 +57,7 @@ export function AbnormalReview({ rows, onConfirm, onCancel }: Props) {
             </p>
           </div>
         )}
-        <div className="overflow-y-auto flex-1 mb-4">
+        <div className={inline ? 'overflow-y-auto max-h-[50vh] mb-4' : 'overflow-y-auto flex-1 mb-4'}>
           <table className="w-full text-sm border-collapse">
             <thead>
               <tr className="bg-gray-50 text-left">
