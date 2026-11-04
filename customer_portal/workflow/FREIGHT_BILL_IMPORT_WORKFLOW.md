@@ -37,6 +37,7 @@
 | 燕文物流 | 账单日期、账单金额 | YANWEN |
 | 云途物流 | 发生时间、交易金额 | YUNExpress |
 | 雄九物流 | 转单号、收货时间、总金额 | XJ LOGISTICS |
+| GC 物流（易可达） | 出库时间、GC、易可达 | GC |
 
 > ⚠️ **重要**：运费文件的识别关键字与运单导入（`CARRIER_SHIPMENT_IMPORT_WORKFLOW`）完全不同！
 > - 运单文件列名：运单号、状态、转单号、跟踪号、订单状态...
@@ -105,17 +106,34 @@
 | — | 挂号费 | registered_fee | 雄九不提供，留空 |
 | — | 其他费用 | other_fee | **计算字段** = freight - freight_fee（含燃油+杂费） |
 
+### **GC 物流（易可达）**
+
+**实际文件表头**: 订单参考号, 订单状态, 创建时间, 出库时间, 跟踪号, 实际送达时间, 总费用, 订单总体积（CM³）, 实际重量（KG）, 计费重量（KG）
+
+| 导入文件字段 | 说明 | 数据库字段 | 备注 |
+|-------------|------|-----------|------|
+| 跟踪号 | 用来查询 | tracking_no | |
+| 出库时间 | 结算日期 | billing_date | |
+| 计费重量（KG） | 计费重量 | weight_g | 文件中单位 kg → 数据库 g（×1000） |
+| 总费用 | 总费用 | freight | **需 × 6.7 转换为人民币** |
+| — | 基础运费 | freight_fee | GC 不提供拆分，留空 |
+| — | 挂号费 | registered_fee | GC 不提供拆分，留空 |
+| — | 其他费用 | other_fee | GC 不提供拆分，留空 |
+
+> ⚠️ 注意：GC 物流的运费文件以美元计价，需乘以汇率 6.7 转换为人民币后写入数据库。详见 `GC_FREIGHT_IMPORT_WORKFLOW.md`。
+
 ### **字段映射差异汇总**
 
-| 特性 | 华翰 HH EXPRESS | 燕文 YANWEN | 云途 YUNExpress | 雄九 XJ LOGISTICS |
-|------|----------------|-------------|-----------------|-------------------|
-| 运单号列名 | 运单号 | 运单号 | 运单号 | 转单号 |
-| 日期列名 | 到货时间 | 账单日期 | 发生时间 | 收货时间 |
-| 重量列名 | 计费重量 | 计费重量(g) | 计费重 | 计费重 |
-| 重量单位 | kg（×1000） | g（不变） | kg（×1000） | kg（×1000） |
-| 总费用列名 | 总费用 | 账单金额(元) | 交易金额 | 总金额 |
-| 有运费拆分 | ✅ freight_fee + registered_fee | ❌ 仅有总额 | ✅ freight_fee + registered_fee | ✅ freight_fee（无挂号费） |
-| other_fee 计算 | freight - freight_fee - registered_fee | 留空 | freight - freight_fee - registered_fee | freight - freight_fee |
+| 特性 | 华翰 HH EXPRESS | 燕文 YANWEN | 云途 YUNExpress | 雄九 XJ LOGISTICS | GC 物流 |
+|------|----------------|-------------|-----------------|-------------------|---------|
+| 运单号列名 | 运单号 | 运单号 | 运单号 | 转单号 | 跟踪号 |
+| 日期列名 | 到货时间 | 账单日期 | 发生时间 | 收货时间 | 出库时间 |
+| 重量列名 | 计费重量 | 计费重量(g) | 计费重 | 计费重 | 计费重量（KG） |
+| 重量单位 | kg（×1000） | g（不变） | kg（×1000） | kg（×1000） | kg（×1000） |
+| 总费用列名 | 总费用 | 账单金额(元) | 交易金额 | 总金额 | 总费用 |
+| 运费乘数 | ❌ | ❌ | ❌ | ❌ | ✅ × 6.7 |
+| 有运费拆分 | ✅ freight_fee + registered_fee | ❌ 仅有总额 | ✅ freight_fee + registered_fee | ✅ freight_fee（无挂号费） | ❌ 仅有总额 |
+| other_fee 计算 | freight - freight_fee - registered_fee | 留空 | freight - freight_fee - registered_fee | freight - freight_fee | 留空 |
 
 ---
 

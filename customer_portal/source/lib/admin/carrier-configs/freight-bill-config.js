@@ -20,7 +20,14 @@ const FREIGHT_BILL_CONFIG = {
   //    运费文件列名: 到货时间、账单日期、发生时间、收货时间、计费重量、总费用...
   //
   CARRIER_IDENTIFIERS: {
-    // 华翰物流 - 运费文件独有列名（优先级最高）
+    // GC 物流（易可达）- 运费文件独有列名（优先级最高，因为华翰的"总费用"太通用）
+    '出库时间': 'GC',
+    '计费重量（KG）': 'GC',  // GC 特有的重量列名（带单位后缀）
+    '订单参考号': 'GC',
+    'GC':       'GC',
+    '易可达':   'GC',
+
+    // 华翰物流 - 运费文件独有列名
     '到货时间': 'HH EXPRESS',
     '其它杂费': 'HH EXPRESS',
     'HH':       'HH EXPRESS',
@@ -107,6 +114,18 @@ const FREIGHT_BILL_CONFIG = {
       // registered_fee 留空
       // other_fee = freight - freight_fee
       // （包含燃油 + 杂费）
+    },
+
+    // GC 物流（易可达）
+    // 实际文件: GC订单及运费.xlsx
+    // 表头: 订单参考号, 订单状态, 创建时间, 出库时间, 跟踪号, 实际送达时间, 总费用, 订单总体积（CM³）, 实际重量（KG）, 计费重量（KG）
+    'GC': {
+      '跟踪号': 'tracking_no',
+      '出库时间': 'billing_date',
+      '计费重量（KG）': 'weight_g',
+      '总费用': 'freight'
+      // freight_fee / registered_fee / other_fee 均留空
+      // freight 需要 × 6.7 转换为人民币
     }
   },
 
@@ -117,7 +136,30 @@ const FREIGHT_BILL_CONFIG = {
     'HH EXPRESS': 'kg',
     'YANWEN': 'g',
     'YUNExpress': 'kg',
-    'XJ LOGISTICS': 'kg'
+    'XJ LOGISTICS': 'kg',
+    'GC': 'kg'
+  },
+
+  // ==================== 运费乘数配置 ====================
+  // 部分物流商的运费需要乘以汇率转换为人民币
+  // null 或不存在 = 不乘，直接使用原值
+  FREIGHT_MULTIPLIER: {
+    'HH EXPRESS': null,
+    'YANWEN': null,
+    'YUNExpress': null,
+    'XJ LOGISTICS': null,
+    'GC': 6.7  // GC 运费为美元，需 × 6.7 转为人民币
+  },
+
+  // ==================== 币种映射配置 ====================
+  // 部分物流商的币种可能需要从缩写转换为标准代码
+  // null 或不存在 = 不转换，直接使用原值
+  CURRENCY_MAP: {
+    'HH EXPRESS': null,
+    'YANWEN': null,
+    'YUNExpress': null,
+    'XJ LOGISTICS': null,
+    'GC': null
   },
 
   // ==================== other_fee 计算规则 ====================
@@ -127,7 +169,8 @@ const FREIGHT_BILL_CONFIG = {
     'HH EXPRESS': 'freight - freight_fee - registered_fee',
     'YANWEN': null,
     'YUNExpress': 'freight - freight_fee - registered_fee',
-    'XJ LOGISTICS': 'freight - freight_fee'
+    'XJ LOGISTICS': 'freight - freight_fee',
+    'GC': null  // GC 不提供费用拆分
   },
 };
 

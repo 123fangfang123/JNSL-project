@@ -1,25 +1,99 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/service'
 import FREIGHT_BILL_CONFIG from '@/lib/admin/carrier-configs/freight-bill-config'
+import fs from 'fs'
+import path from 'path'
 
 const CARRIER_DB_NAME: Record<string, string> = {
   yunexpress: 'YUNExpress',
   yanwen: 'YANWEN',
   hh: 'HH EXPRESS',
-  xj: 'XJ LOGISTICS'
+  xj: 'XJ LOGISTICS',
+  gc: 'GC'
+}
+
+// 日志工具函数
+function getLogTimestamp(): string {
+  const now = new Date()
+  const utc8 = new Date(now.getTime() + 8 * 60 * 60 * 1000)
+  return utc8.toISOString().replace('T', ' ').substring(0, 19)
+}
+
+function saveImportLog(
+  carrierName: string,
+  totalRows: number,
+  inserted: number,
+  updated: number,
+  skipped: number,
+  errors: string[] = [],
+  updatedTrackingNos: string[] = []
+): string {
+  const logDir = path.join(process.cwd(), 'Data Import', 'Process Log')
+  
+  // 确保日志目录存在
+  if (!fs.existsSync(logDir)) {
+    fs.mkdirSync(logDir, { recursive: true })
+  }
+  
+  const now = new Date()
+  const utc8 = new Date(now.getTime() + 8 * 60 * 60 * 1000)
+  const timestamp = utc8.toISOString().replace(/[:.]/g, '-').substring(0, 19)
+  const logFilePath = path.join(logDir, `${carrierName}_Freight_${timestamp}.log`)
+  
+  const logContent = [
+    `[${getLogTimestamp()}] === 运费账单导入（网页端） ===`,
+    ``,
+    `[${getLogTimestamp()}] 🎯 导入方式: 网页上传`,
+    `[${getLogTimestamp()}] 📋 物流商: ${carrierName}`,
+    `[${getLogTimestamp()}] 📊 总记录数: ${totalRows}`,
+    ``,
+    `[${getLogTimestamp()}] 💾 写入结果:`,
+    `[${getLogTimestamp()}]    新增: ${inserted}`,
+    `[${getLogTimestamp()}]    更新（费用相加）: ${updated}`,
+    `[${getLogTimestamp()}]    跳过（freight 相同）: ${skipped}`,
+    `[${getLogTimestamp()}]    错误: ${errors.length}`,
+    ``,
+    ...(updatedTrackingNos.length > 0
+      ? [
+          `[${getLogTimestamp()}] 🔄 费用相加更新的运单:`,
+          ...updatedTrackingNos.map((tn, idx) => `[${getLogTimestamp()}]    ${idx + 1}. ${tn}`),
+          ``
+        ]
+      : []),
+    ...(errors.length > 0
+      ? [
+          `[${getLogTimestamp()}] ❌ 错误详情:`,
+          ...errors.map((err, idx) => `[${getLogTimestamp()}]    ${idx + 1}. ${err}`),
+          ``
+        ]
+      : []),
+    `[${getLogTimestamp()}] ✅ 导入完成`,
+  ].join('\n')
+  
+  fs.writeFileSync(logFilePath, logContent, 'utf-8')
+  return logFilePath
 }
 
 export async function POST(req: NextRequest) {
+  const errors: string[] = []
+  let carrierName = 'UNKNOWN'
+  let totalRows = 0
+  
   try {
     const { rows, carrier } = await req.json() as {
       rows: Record<string, unknown>[]
-      carrier: 'yunexpress' | 'yanwen' | 'hh' | 'xj'
+      carrier: 'yunexpress' | 'yanwen' | 'hh' | 'xj' | 'gc'
     }
+    
+    carrierName = CARRIER_DB_NAME[carrier] ?? carrier
+    totalRows = rows.length
+    
     const supabase = createServiceClient()
 
     const carrierDbName = CARRIER_DB_NAME[carrier] ?? carrier
     const weightUnit = (FREIGHT_BILL_CONFIG.WEIGHT_UNIT as Record<string, string>)[carrierDbName] ?? 'g'
     const otherFeeFormula = (FREIGHT_BILL_CONFIG.OTHER_FEE_FORMULA as Record<string, string | null>)[carrierDbName]
+    const freightMultiplier = (FREIGHT_BILL_CONFIG.FREIGHT_MULTIPLIER as Record<string, number | null>)[carrierDbName]
 
     // Transform raw mapped rows into freight table rows
     const freightRows: Record<string, unknown>[] = []
@@ -50,9 +124,14 @@ export async function POST(req: NextRequest) {
       freightRow.freight_fee = freightFee || null
       freightRow.registered_fee = registeredFee || null
 
+      // Apply freight multiplier (e.g., GC needs × 6.7 to convert USD to CNY)
+      let freight = parseFloat(String(row.freight ?? '0')) || 0
+      if (freightMultiplier && freight > 0) {
+        freight = Math.round(freight * freightMultiplier * 100) / 100
+      }
+
       // Calculate other_fee based on carrier formula
       if (otherFeeFormula) {
-        const freight = parseFloat(String(row.freight ?? '0')) || 0
         const vars: Record<string, number> = { freight, freight_fee: freightFee, registered_fee: registeredFee }
         let expr = otherFeeFormula
         for (const [key, val] of Object.entries(vars)) {
@@ -66,7 +145,6 @@ export async function POST(req: NextRequest) {
         }
         freightRow.freight = freight || null
       } else {
-        const freight = parseFloat(String(row.freight ?? '0')) || 0
         freightRow.freight = freight || null
         freightRow.other_fee = null
       }
@@ -99,16 +177,22 @@ export async function POST(req: NextRequest) {
     let inserted = 0
     let updated = 0
     let skipped = 0
+    const updatedTrackingNos: string[] = []
 
     for (let i = 0; i < dedupedFreightRows.length; i += CHUNK) {
       const batch = dedupedFreightRows.slice(i, i + CHUNK)
       const batchTrackingNos = batch.map((r) => r.tracking_no as string)
 
       // Fetch existing records
-      const { data: existing } = await supabase
+      const { data: existing, error: fetchError } = await supabase
         .from('freight')
         .select('tracking_no, freight')
         .in('tracking_no', batchTrackingNos)
+
+      if (fetchError) {
+        errors.push(`批量查询失败: ${fetchError.message}`)
+        continue
+      }
 
       const existingMap = new Map<string, number>()
       for (const r of existing ?? []) {
@@ -137,14 +221,27 @@ export async function POST(req: NextRequest) {
             freight_fee: ((row.freight_fee as number) || 0) + ((existingMap.get(tn) ? 0 : 0)), // Simplified: just update freight
             weight_g: row.weight_g,
           })
+          updatedTrackingNos.push(tn)
         }
       }
 
       // Insert new records
       if (toInsert.length > 0) {
         const { error } = await supabase.from('freight').insert(toInsert)
-        if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-        inserted += toInsert.length
+        if (error) {
+          errors.push(`批量插入失败: ${error.message}`)
+          // Try inserting one by one
+          for (const row of toInsert) {
+            const { error: ie } = await supabase.from('freight').insert(row)
+            if (ie) {
+              errors.push(`插入失败: ${row.tracking_no} - ${ie.message}`)
+            } else {
+              inserted++
+            }
+          }
+        } else {
+          inserted += toInsert.length
+        }
       }
 
       // Update existing records with summed fees
@@ -156,17 +253,35 @@ export async function POST(req: NextRequest) {
             weight_g: row.weight_g,
           })
           .eq('tracking_no', row.tracking_no)
-        if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-        updated++
+        if (error) {
+          errors.push(`更新失败: ${row.tracking_no} - ${error.message}`)
+        } else {
+          updated++
+        }
       }
     }
+
+    // Save log
+    const logFilePath = saveImportLog(carrierName, totalRows, inserted, updated, skipped, errors, updatedTrackingNos)
 
     return NextResponse.json({
       inserted,
       updated,
       skipped,
+      logFile: logFilePath,
+      updatedTrackingNos: updatedTrackingNos.length > 0 ? updatedTrackingNos : undefined,
+      errors: errors.length > 0 ? errors : undefined
     })
   } catch (err) {
-    return NextResponse.json({ error: String(err) }, { status: 500 })
+    const errorMessage = String(err)
+    errors.push(`导入异常: ${errorMessage}`)
+    
+    // Save error log
+    const logFilePath = saveImportLog(carrierName, totalRows, 0, 0, 0, errors, [])
+    
+    return NextResponse.json({ 
+      error: errorMessage,
+      logFile: logFilePath
+    }, { status: 500 })
   }
 }

@@ -7,13 +7,14 @@ import { NavigationGuard } from '@/components/admin/NavigationGuard'
 import FREIGHT_BILL_CONFIG from '@/lib/admin/carrier-configs/freight-bill-config'
 
 type Step = 'idle' | 'mapping' | 'uploading' | 'done' | 'error'
-type CarrierId = 'yunexpress' | 'yanwen' | 'hh' | 'xj'
+type CarrierId = 'yunexpress' | 'yanwen' | 'hh' | 'xj' | 'gc'
 
 const CARRIER_DB_NAME: Record<CarrierId, string> = {
   yunexpress: 'YUNExpress',
   yanwen: 'YANWEN',
   hh: 'HH EXPRESS',
-  xj: 'XJ LOGISTICS'
+  xj: 'XJ LOGISTICS',
+  gc: 'GC'
 }
 
 const DB_NAME_TO_KEY: Record<string, CarrierId> = Object.fromEntries(
@@ -25,6 +26,7 @@ const CARRIERS: Array<{ id: CarrierId; label: string; map: Record<string, string
   { id: 'yanwen', label: 'YANWEN', map: FREIGHT_BILL_CONFIG.CARRIER_COLUMN_MAPS['YANWEN'] },
   { id: 'hh', label: 'HH Express', map: FREIGHT_BILL_CONFIG.CARRIER_COLUMN_MAPS['HH EXPRESS'] },
   { id: 'xj', label: 'XJ Logistics', map: FREIGHT_BILL_CONFIG.CARRIER_COLUMN_MAPS['XJ LOGISTICS'] },
+  { id: 'gc', label: 'GC (易可达)', map: FREIGHT_BILL_CONFIG.CARRIER_COLUMN_MAPS['GC'] },
 ]
 
 /**
@@ -58,7 +60,14 @@ export default function UploadFreightPage() {
   const [mappedRows, setMappedRows] = useState<Record<string, unknown>[]>([])
   const [mappedCols, setMappedCols] = useState<Array<{ source: string; db: string }>>([])
   const [unmappedCols, setUnmappedCols] = useState<string[]>([])
-  const [result, setResult] = useState<{ inserted: number; updated: number; skipped: number } | null>(null)
+  const [result, setResult] = useState<{ 
+    inserted: number; 
+    updated: number; 
+    skipped: number;
+    logFile?: string;
+    updatedTrackingNos?: string[];
+    errors?: string[];
+  } | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [detectedCarrier, setDetectedCarrier] = useState<CarrierId | null>(null)
 
@@ -222,6 +231,35 @@ export default function UploadFreightPage() {
               </p>
             )}
           </div>
+          
+          {result.updatedTrackingNos && result.updatedTrackingNos.length > 0 && (
+            <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded">
+              <p className="text-sm font-semibold text-blue-700 mb-2">费用相加更新的运单号:</p>
+              <div className="text-xs text-blue-600 space-y-1 max-h-32 overflow-y-auto">
+                {result.updatedTrackingNos.map((tn, idx) => (
+                  <p key={idx}>{idx + 1}. {tn}</p>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {result.errors && result.errors.length > 0 && (
+            <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded">
+              <p className="text-sm font-semibold text-red-700 mb-2">错误信息:</p>
+              <div className="text-xs text-red-600 space-y-1 max-h-32 overflow-y-auto">
+                {result.errors.map((err, idx) => (
+                  <p key={idx}>{idx + 1}. {err}</p>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {result.logFile && (
+            <div className="mt-3 text-xs text-gray-500">
+              <p>📝 日志文件: <span className="font-mono">{result.logFile}</span></p>
+            </div>
+          )}
+          
           <button onClick={reset} className="mt-4 text-sm text-green-700 underline">
             继续导入其他文件
           </button>
