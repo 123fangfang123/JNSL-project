@@ -23,6 +23,7 @@ export default function CheckCancellableOrdersPage() {
   const [page, setPage] = useState(1)
   const [pageSize] = useState(50)
   const [total, setTotal] = useState(0)
+  const [exporting, setExporting] = useState(false)
 
   useEffect(() => {
     fetchOrders()
@@ -104,6 +105,32 @@ export default function CheckCancellableOrdersPage() {
     router.push('/admin/upload/orders')
   }
 
+  async function handleExport() {
+    setExporting(true)
+    setError(null)
+    try {
+      const res = await fetch('/api/admin/check-cancellable-orders/export')
+      if (!res.ok) {
+        const json = await res.json().catch(() => null)
+        setError(json?.error || '导出失败')
+        return
+      }
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `cancellable_orders_${new Date().toISOString().slice(0, 10)}.xlsx`
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      URL.revokeObjectURL(url)
+    } catch (err) {
+      setError(String(err))
+    } finally {
+      setExporting(false)
+    }
+  }
+
   function goToPage(p: number) {
     if (p < 1 || p > Math.ceil(total / pageSize)) return
     setPage(p)
@@ -170,6 +197,13 @@ export default function CheckCancellableOrdersPage() {
         <span className="text-sm text-gray-600">
           共 {total} 条订单，已选 {selectedIds.size} 条
         </span>
+        <button
+          onClick={handleExport}
+          disabled={exporting}
+          className="ml-auto px-6 py-2 border border-gray-300 text-gray-700 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {exporting ? '导出中...' : '下载'}
+        </button>
       </div>
 
       <div className="border border-gray-300 rounded-lg overflow-hidden">
