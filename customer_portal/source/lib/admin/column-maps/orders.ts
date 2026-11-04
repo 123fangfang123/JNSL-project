@@ -12,7 +12,7 @@
   '商品数量': 'qty',
   '是否重发订单': 'is_abnormal',
   '重发原因': 'abnormal_code',
-  '订单总金额': 'order_total_value',
+  '订单总金额': 'order_cny_value',
   '汇率(原币)': 'order_ex_rate',
   '订单商品名称': 'product_name',
   '商品编号(ItemId)': 'item_id',

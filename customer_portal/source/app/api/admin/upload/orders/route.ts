@@ -10,7 +10,7 @@ const ORDER_FIELDS = [
   'shipment_date', 'cancel_date', 'return_sign_date', 'is_return', 'return_qty',
   'post_code',
 ]
-const PRICING_FIELDS = ['transaction_id', 'order_total_value', 'order_ex_rate']
+const PRICING_FIELDS = ['transaction_id', 'order_cny_value', 'order_ex_rate', 'currency']
 const ITEM_FIELDS = [
   'transaction_id', 'sku', 'product_name', 'qty', 'item_id',
   'sku_standard_price', 'platform_product_title', 'sku_image_url',
@@ -131,17 +131,17 @@ export async function POST(req: NextRequest) {
         for (const f of PRICING_FIELDS) {
           if (f !== 'transaction_id' && row[f] !== undefined) pricingRow[f] = row[f]
         }
-        if (pricingRow.order_total_value != null) {
-          pricingRow.order_total_value = parseFloat(String(pricingRow.order_total_value)) || null
+        if (pricingRow.order_cny_value != null) {
+          const num = parseFloat(String(pricingRow.order_cny_value))
+          pricingRow.order_cny_value = isNaN(num) ? null : num
         }
         if (pricingRow.order_ex_rate != null) {
-          pricingRow.order_ex_rate = parseFloat(String(pricingRow.order_ex_rate)) || null
+          const num = parseFloat(String(pricingRow.order_ex_rate))
+          pricingRow.order_ex_rate = isNaN(num) ? null : num
         }
-        if (pricingRow.order_total_value != null && pricingRow.order_ex_rate != null) {
-          pricingRow.order_cny_value = (pricingRow.order_total_value as number) * (pricingRow.order_ex_rate as number)
-        }
-        delete pricingRow.order_total_value
-          pricingMap.set(tid, pricingRow)
+        const currency = pricingRow.currency == null ? '' : String(pricingRow.currency).trim()
+        pricingRow.currency = currency || null
+        pricingMap.set(tid, pricingRow)
       }
 
       // --- Collect item rows (all SKU lines) ---

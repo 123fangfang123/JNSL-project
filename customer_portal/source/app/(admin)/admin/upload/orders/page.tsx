@@ -71,7 +71,7 @@ export default function UploadOrdersPage() {
     const REQUIRED_DB_FIELDS = [
       'transaction_id', 'order_number', 'store_name', 'sku', 'qty',
       'order_date', 'order_status', 'country', 'is_abnormal', 'abnormal_code',
-      'order_total_value', 'order_ex_rate', 'product_name', 'item_id',
+      'order_cny_value', 'order_ex_rate', 'product_name', 'item_id',
       'tracking_no', 'shipment_date', 'channel_id', 'dispatch_date',
     ]
     const mappedDbFields = new Set(mappedCols.map(m => m.db))

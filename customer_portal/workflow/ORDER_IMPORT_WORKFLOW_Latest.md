@@ -1,8 +1,8 @@
 ﻿# MA 订单导入工作流文档
 
-**版本**: v5.8  
+**版本**: v5.9  
 **创建日期**: 2026-10-14  
-**最后更新**: 2026-11-02  
+**最后更新**: 2026-11-04  
 **状态**: ✅ 当前使用  
 **适用数据库架构**: orders + order_pricing 拆分后，carrier 字段已改为 TEXT 类型
 
@@ -81,10 +81,11 @@
 - `sku_image_url`: SKU 图片链接
 
 #### order_pricing 表（价格信息）
-- `order_id`: 关联 orders 表的 ID
-- `order_total_value`: 订单总金额
-- `order_ex_rate`: 汇率
-- `order_cny_value`: 人民币金额（= order_total_value × order_ex_rate）
+- `transaction_id`: 关联 orders 表（主键，1:1）
+- `order_cny_value`: 订单总金额（直接读取 Excel「订单总金额」列）
+- `order_ex_rate`: 汇率（直接读取 Excel「汇率(原币)」列）
+- `currency`: 币种（直接读取 Excel「币种」列，为空时写入 NULL）
+- `cog_usd` / `shipping_usd` / `fulfillment_usd` / `total_cost_usd` / `ex_rate_used` / `billing_date`: 由触发器从 `order_billing` 同步，导入流程不写入
 
 ---
 
@@ -370,8 +371,9 @@ for (let i = 0; i < transactionIds.length; i += 100) {
 - 包括: order_number, shop_name, order_status, carrier, channel_id, shipment_date, cancel_date 等
 
 #### 4.2 更新 order_pricing 表
-- 删除旧记录
-- 插入新记录（order_total_value, order_ex_rate, order_cny_value）
+- 按 `transaction_id` upsert 覆盖（前端导入接口与 CLI 脚本一致）
+- 覆盖字段：`order_cny_value`（订单总金额）、`order_ex_rate`（汇率(原币)）、`currency`（币种，空值写 NULL）
+- 触发器同步的计费字段（`cog_usd`、`shipping_usd`、`fulfillment_usd`、`total_cost_usd`、`ex_rate_used`、`billing_date`）不在导入 payload 中，保持原值不变
 
 #### 4.3 更新 order_items 表
 - 删除旧 items（按 order_id）
@@ -409,8 +411,8 @@ for (let i = 0; i < transactionIds.length; i += 100) {
 - 返回创建的 order ID
 
 #### 5.2 创建 order_pricing 记录
-- 关联 order ID
-- 插入价格信息（order_total_value, order_ex_rate, order_cny_value）
+- 关联 `transaction_id`
+- 写入价格信息：`order_cny_value`（订单总金额）、`order_ex_rate`（汇率(原币)）、`currency`（币种，空值写 NULL）
 
 #### 5.3 创建 order_items 记录
 - 关联 order ID
@@ -650,6 +652,16 @@ const CARRIER_TO_CHANNEL = {
 
 ## 🔄 更新日志
 
+### v5.9 (2026-11-04)
+- ✅ 前端导入接口价格字段来源调整：`order_cny_value` 直接取 Excel「订单总金额」，不再按 `订单总金额 × 汇率` 计算
+- ✅ `order_ex_rate` 直接取 Excel「汇率(原币)」
+- ✅ `currency` 直接取 Excel「币种」；空值写入 `NULL`，不再默认 `USD`
+- ✅ 列映射更新（`source/lib/admin/column-maps/orders.ts`）：`订单总金额` → `order_cny_value`
+- ✅ 前端必填列校验同步调整：`order_total_value` → `order_cny_value`
+- ✅ API 更新（`/api/admin/upload/orders`）：`PRICING_FIELDS` 增加 `currency`；价格数值改用 `isNaN` 判断，0 不再被误判为 NULL
+- ✅ 重复导入仍按 `transaction_id` upsert 覆盖价格字段，触发器同步的计费字段不受影响
+- ℹ️ CLI 脚本（`import-ma-orders-from-xls.js` 及其配置 `ma-order-import-config.js`）同步调整：币种空值写入 `NULL`，与前端导入接口保持一致
+
 ### v5.8 (2026-11-02)
 - ✅ 新增未映射物流公司提示机制
 - ✅ CLI 脚本：检测到未映射物流公司时暂停并询问用户是否继续
@@ -718,5 +730,5 @@ const CARRIER_TO_CHANNEL = {
 
 ---
 
-**最后更新**: 2026-10-16  
+**最后更新**: 2026-11-04  
 **文档状态**: ✅ 当前使用
