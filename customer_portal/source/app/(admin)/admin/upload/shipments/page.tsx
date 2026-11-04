@@ -13,7 +13,6 @@ interface ImportResult {
   updated: number
   fixedCount: number
   unmatchedTrackingNos: string[]
-  unmatchedFilePath?: string
 }
 
 const COLUMN_MAPS = COLUMN_MAPS_BY_KEY as Record<Carrier, Record<string, string | string[]>>
@@ -225,11 +224,6 @@ export default function UploadShipmentsPage() {
                     )}
                   </ul>
                 </div>
-                {result.unmatchedFilePath && (
-                  <p className="mt-2 text-xs text-yellow-700 font-mono">
-                    📄 异常记录已保存: {result.unmatchedFilePath}
-                  </p>
-                )}
               </div>
             )}
           </div>

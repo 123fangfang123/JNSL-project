@@ -1,6 +1,4 @@
 ﻿import { NextRequest, NextResponse } from 'next/server'
-import * as fs from 'fs'
-import * as path from 'path'
 import { createServiceClient } from '@/lib/supabase/service'
 import { SHIPMENT_STATUS_MAP, CARRIER_DB_NAME } from '@/lib/admin/carrier-configs/carrier-shipment-config'
 
@@ -152,32 +150,10 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // 生成异常记录文件
-    let unmatchedFilePath: string | null = null
-    if (finalUnmatched.length > 0) {
-      const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)
-      const filename = `${carrierDbName}_unmatched_${timestamp}.csv`
-      const dataImportDir = path.join(process.cwd(), '..', 'Data Import')
-      
-      // 确保目录存在
-      if (!fs.existsSync(dataImportDir)) {
-        fs.mkdirSync(dataImportDir, { recursive: true })
-      }
-      
-      unmatchedFilePath = path.join(dataImportDir, filename)
-      
-      // 写入 CSV 文件
-      const csvHeader = 'tracking_no'
-      const csvRows = finalUnmatched.map(tn => `${tn}`)
-      const csvContent = [csvHeader, ...csvRows].join('\n')
-      fs.writeFileSync(unmatchedFilePath, csvContent, 'utf-8')
-    }
-
     return NextResponse.json({
       updated,
       fixedCount,
       unmatchedTrackingNos: finalUnmatched,
-      unmatchedFilePath,
     })
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 })
